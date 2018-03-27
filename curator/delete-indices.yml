@@ -1,0 +1,23 @@
+---
+actions:
+  1:
+    action: delete_indices
+    description: >-
+      Delete indices older than ${MAX_INDEX_AGE} days (based on index name),
+      for indices defined by regex. Ignore the error if the filter does not
+      result in an actionable list of indices (ignore_empty_list) and exit
+      cleanly.
+    options:
+      ignore_empty_list: True
+      continue_if_exception: False
+      disable_action: False
+    filters:
+    - filtertype: pattern
+      kind: regex
+      value: ^(apm-|avocado-|.monitoring-|.watcher-).*$
+      exclude: None
+    - filtertype: age
+      direction: older
+      source: creation_date
+      unit: days
+      unit_count: ${MAX_INDEX_AGE}

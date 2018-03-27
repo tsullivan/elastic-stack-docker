@@ -1,0 +1,113 @@
+version: "2.2"
+
+services:
+  elasticsearch:
+    container_name: "esd_nginx_es-proxy"
+    image: "nginx"
+    cpu_count: 1
+    cpu_period: 50000
+    cpu_quota: 48000
+    env_file: [".env"]
+    volumes:
+      - "./nginx/es-proxy.conf:/etc/nginx/conf.d/es-proxy.conf:ro"
+    ports:
+      - "19200:9200"
+
+  web:
+    container_name: "esd_nginx_web_kibana-proxy"
+    image: "nginx"
+    cpu_count: 1
+    cpu_period: 50000
+    cpu_quota: 48000
+    env_file: [".env"]
+    volumes:
+      - "./nginx/web.conf:/etc/nginx/conf.d/web.conf:ro"
+      - "./nginx/html:/etc/nginx/html:ro"
+      - "./cert-bundle/ca:/etc/nginx/ca"
+      - "./cert-bundle/virtual-spice:/etc/nginx/virtual-spice"
+    ports:
+      - "443:8080"
+
+  elasticsearch-internal:
+    container_name: "esd_elasticsearch1-6.3.2"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:6.3.2"
+    cpu_count: 1
+    cpu_period: 50000
+    cpu_quota: 40000
+    environment:
+      - "CLUSTER_NAME=docker-cluster"
+      - "XPACK_SECURITY_ENABLED=false"
+      - "bootstrap.memory_lock=true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    env_file: [".env"]
+    volumes:
+      - "esdata-6.3:/usr/share/elasticsearch/data"
+
+  kibana:
+    container_name: "esd_kibana-canvas-6.3.2"
+    build: "kibana"
+    cpu_period: 50000
+    cpu_quota: 45000
+    environment:
+      - "SERVER_BASEPATH=/kibana"
+      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+      - "XPACK_GRAPH_ENABLED=false"
+      - "XPACK_ML_ENABLED=false"
+      - "XPACK_REPORTING_ENABLED=false"
+      - "XPACK_GROKDEBUGGER_ENABLED=false"
+      - "XPACK_SEARCHPROFILER_ENABLED=false"
+      - "XPACK_XPACK_MAIN_TELEMETRY_ENABLED=false"
+
+  apm-server:
+    container_name: "esd_apm-server-6.3.2"
+    image: "docker.elastic.co/apm/apm-server:6.3.2"
+    cpu_count: 1
+    cpu_period: 50000
+    cpu_quota: 35000
+    environment:
+      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+    env_file: [".env"]
+    ports: ["8200:8200"]
+
+  logstash:
+    container_name: "esd_logstash-avocados-6.3.2"
+    image: "docker.elastic.co/logstash/logstash:6.3.2"
+    cpu_count: 1
+    cpu_period: 50000
+    cpu_quota: 45000
+    environment:
+      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+    env_file: [".env"]
+    volumes:
+       - "./logstash/pipeline:/usr/share/logstash/pipeline:ro"
+       - "./logstash/avocado-tweets-wildcard.json:/usr/share/logstash/avocado-tweets-wildcard.json:ro"
+
+  curator:
+    container_name: "esd_curator-5.5"
+    image: "tsullivan/curator-5.5"
+    build: "./curator"
+    environment:
+       - "ELASTICSEARCH_HOST=es-proxy"
+       - "CLIENT_HOSTS=es-proxy"
+       - "CLIENT_PORT=9200"
+       - "MAX_INDEX_AGE=3"
+    env_file: [".env"]
+    volumes:
+       - "./curator/delete-indices.yml:/usr/share/curator/delete-indices.yml:ro"
+
+  chatbot:
+    container_name: "esd_my-chatbot"
+    image: "tsullivan/chatbot"
+    build: "$HOME/code/chatbot"
+    cpu_period: 50000
+    cpu_quota: 45000
+    environment:
+      - "ELASTIC_APM_SERVER_URL=http://apm-server:8200"
+    env_file: [".env"]
+
+volumes:
+  esdata-6.3:
+    driver: "local"

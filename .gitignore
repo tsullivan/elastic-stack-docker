@@ -1,0 +1,4 @@
+.env*
+cert-bundle
+kibana/canvas-extras*.zip
+kibana/kibana-canvas*.zip
