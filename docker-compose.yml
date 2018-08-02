@@ -61,6 +61,20 @@ services:
       - "XPACK_SEARCHPROFILER_ENABLED=false"
       - "XPACK_XPACK_MAIN_TELEMETRY_ENABLED=false"
 
+  metricbeat:
+    container_name: "esd_metricbeat-6.3.2"
+    image: "docker.elastic.co/beats/metricbeat:6.3.2"
+    user: "root"
+    cpu_count: 1
+    cpu_period: 50000
+    cpu_quota: 35000
+    environment:
+      - "DOCKER_HOST=unix:///var/run/docker.sock"
+      - "ELASTICSEARCH_HOST=http://elasticsearch:9200"
+    volumes:
+      - "./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
   apm-server:
     container_name: "esd_apm-server-6.3.2"
     image: "docker.elastic.co/apm/apm-server:6.3.2"
@@ -82,21 +96,21 @@ services:
       - "ELASTICSEARCH_URL=http://elasticsearch:9200"
     env_file: [".env"]
     volumes:
-       - "./logstash/pipeline:/usr/share/logstash/pipeline:ro"
-       - "./logstash/avocado-tweets-wildcard.json:/usr/share/logstash/avocado-tweets-wildcard.json:ro"
+      - "./logstash/pipeline:/usr/share/logstash/pipeline:ro"
+      - "./logstash/avocado-tweets-wildcard.json:/usr/share/logstash/avocado-tweets-wildcard.json:ro"
 
   curator:
     container_name: "esd_curator-5.5"
     image: "tsullivan/curator-5.5"
     build: "./curator"
     environment:
-       - "ELASTICSEARCH_HOST=es-proxy"
-       - "CLIENT_HOSTS=es-proxy"
-       - "CLIENT_PORT=9200"
-       - "MAX_INDEX_AGE=3"
+      - "ELASTICSEARCH_HOST=es-proxy"
+      - "CLIENT_HOSTS=es-proxy"
+      - "CLIENT_PORT=9200"
+      - "MAX_INDEX_AGE=3"
     env_file: [".env"]
     volumes:
-       - "./curator/delete-indices.yml:/usr/share/curator/delete-indices.yml:ro"
+      - "./curator/delete-indices.yml:/usr/share/curator/delete-indices.yml:ro"
 
   chatbot:
     container_name: "esd_my-chatbot"

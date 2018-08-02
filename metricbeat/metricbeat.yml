@@ -1,0 +1,22 @@
+metricbeat.modules:
+- module: docker
+  metricsets:
+    - "container"
+    - "cpu"
+    - "diskio"
+    - "healthcheck"
+    - "info"
+    #- "image"
+    - "memory"
+    - "network"
+  hosts: ["${DOCKER_HOST}"]
+  period: 10s
+  enabled: true
+
+  # Replace dots in labels with `_`. Set to false to keep dots
+  labels.dedot: true
+
+output.elasticsearch:
+  hosts: "${ELASTICSEARCH_HOST}"
+
+xpack.monitoring.enabled: true
