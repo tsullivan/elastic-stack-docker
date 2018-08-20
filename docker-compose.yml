@@ -29,7 +29,7 @@ services:
       - "443:8080"
 
   elasticsearch-internal:
-    container_name: "esd_elasticsearch1-6.3.2"
+    container_name: "esd_elasticsearch1-internal-6.3.2"
     image: "docker.elastic.co/elasticsearch/elasticsearch:6.3.2"
     cpu_count: 1
     cpu_period: 50000
