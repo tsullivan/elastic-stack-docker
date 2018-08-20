@@ -111,6 +111,7 @@ services:
     env_file: [".env"]
     volumes:
       - "./curator/delete-indices.yml:/usr/share/curator/delete-indices.yml:ro"
+      - "./curator/curator.yml:/usr/share/curator/curator.yml"
 
   chatbot:
     container_name: "esd_my-chatbot"
