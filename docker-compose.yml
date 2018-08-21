@@ -104,8 +104,8 @@ services:
     image: "tsullivan/curator-5.5"
     build: "./curator"
     environment:
-      - "ELASTICSEARCH_HOST=es-proxy"
-      - "CLIENT_HOSTS=es-proxy"
+      - "ELASTICSEARCH_HOST=http://elasticsearch:9200"
+      - "CLIENT_HOST=elasticsearch"
       - "CLIENT_PORT=9200"
       - "MAX_INDEX_AGE=3"
     env_file: [".env"]

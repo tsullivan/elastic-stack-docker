@@ -1,7 +1,8 @@
 #!/bin/bash
+set -x
 
 curator \
-  --config /usr/share/curator/curator.yml
+  --config /usr/share/curator/curator.yml \
   optimize \
   --max_num_segments 1 \
   indices \

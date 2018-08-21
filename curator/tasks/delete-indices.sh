@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 if [ -n "$MAX_INDEX_AGE" ]; then
   curator \
