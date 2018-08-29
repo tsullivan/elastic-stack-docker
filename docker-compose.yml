@@ -1,7 +1,7 @@
 version: "2.2"
 
 services:
-  elasticsearch:
+  elasticsearch-proxy:
     container_name: "esd_nginx_es-proxy"
     image: "nginx"
     cpu_count: 1
@@ -53,7 +53,7 @@ services:
     cpu_quota: 45000
     environment:
       - "SERVER_BASEPATH=/kibana"
-      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+      - "ELASTICSEARCH_URL=http://elasticsearch-proxy:9200"
 
   metricbeat:
     container_name: "esd_metricbeat-6.4.0"
@@ -64,7 +64,7 @@ services:
     cpu_quota: 35000
     environment:
       - "DOCKER_HOST=unix:///var/run/docker.sock"
-      - "ELASTICSEARCH_HOST=http://elasticsearch:9200"
+      - "ELASTICSEARCH_HOST=http://elasticsearch-proxy:9200"
     volumes:
       - "./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -76,7 +76,7 @@ services:
     cpu_period: 50000
     cpu_quota: 35000
     environment:
-      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+      - "ELASTICSEARCH_URL=http://elasticsearch-proxy:9200"
     env_file: [".env"]
     ports: ["8200:8200"]
 
@@ -87,7 +87,9 @@ services:
     cpu_period: 50000
     cpu_quota: 45000
     environment:
-      - "ELASTICSEARCH_URL=http://elasticsearch:9200"
+      - "ELASTICSEARCH_URL=http://elasticsearch-proxy:9200"
+      - "XPACK_MONITORING_ENABLED=true"
+      - "XPACK_MONITORING_ELASTICSEARCH_URL=http://elasticsearch-proxy:9200"
     env_file: [".env"]
     volumes:
       - "./logstash/pipeline:/usr/share/logstash/pipeline:ro"
@@ -98,8 +100,8 @@ services:
     image: "tsullivan/curator-5.5"
     build: "./curator"
     environment:
-      - "ELASTICSEARCH_HOST=http://elasticsearch:9200"
-      - "CLIENT_HOST=elasticsearch"
+      - "ELASTICSEARCH_HOST=http://elasticsearch-proxy:9200"
+      - "CLIENT_HOST=elasticsearch-proxy"
       - "CLIENT_PORT=9200"
       - "MAX_INDEX_AGE=3"
     env_file: [".env"]
