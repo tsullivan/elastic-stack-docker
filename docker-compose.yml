@@ -90,6 +90,7 @@ services:
       - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$METRICBEAT_CERTS_DIR/ca/virtual-spice-ca.crt"
     volumes:
       - "./cert-bundle:$METRICBEAT_CERTS_DIR"
+      - "./metricbeat/config:/usr/share/metricbeat/config:ro"
       - "./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
 

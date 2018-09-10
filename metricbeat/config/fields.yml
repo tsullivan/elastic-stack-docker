@@ -1,0 +1,2711 @@
+
+- key: beat
+  title: Beat
+  description: >
+    Contains common beat fields available in all event types.
+  fields:
+
+    - name: beat.name
+      description: >
+        The name of the Beat sending the log messages. If the Beat name is
+        set in the configuration file, then that value is used. If it is not
+        set, the hostname is used. To set the Beat name, use the `name`
+        option in the configuration file.
+    - name: beat.hostname
+      description: >
+        The hostname as returned by the operating system on which the Beat is
+        running.
+    - name: beat.timezone
+      description: >
+        The timezone as returned by the operating system on which the Beat is
+        running.
+    - name: beat.version
+      description: >
+        The version of the beat that generated this event.
+
+    - name: "@timestamp"
+      type: date
+      required: true
+      format: date
+      example: August 26th 2016, 12:35:53.332
+      description: >
+        The timestamp when the event log record was generated.
+
+    - name: tags
+      description: >
+        Arbitrary tags that can be set per Beat and per transaction
+        type.
+
+    - name: fields
+      type: object
+      object_type: keyword
+      description: >
+        Contains user configurable fields.
+
+    - name: error
+      type: group
+      description: >
+        Error fields containing additional info in case of errors.
+      fields:
+        - name: message
+          type: text
+          description: >
+            Error message.
+        - name: code
+          type: long
+          description: >
+            Error code.
+        - name: type
+          type: keyword
+          description: >
+            Error type.
+- key: docker
+  title: Docker
+  description: >
+    Docker stats collected from Docker.
+  short_config: false
+  anchor: docker-processor
+  fields:
+    - name: docker
+      type: group
+      fields:
+        - name: container.id
+          type: keyword
+          description: >
+            Unique container id.
+        - name: container.image
+          type: keyword
+          description: >
+            Name of the image the container was built on.
+        - name: container.name
+          type: keyword
+          description: >
+            Container name.
+        - name: container.labels
+          type: object
+          object_type: keyword
+          description: >
+            Image labels.
+- key: host
+  title: Host
+  description: >
+    Info collected for the host machine.
+  anchor: host-processor
+  fields:
+    - name: host
+      type: group
+      fields:
+        - name: name
+          type: keyword
+          description: >
+            Hostname.
+        - name: id
+          type: keyword
+          description: >
+            Unique host id.
+        - name: architecture
+          type: keyword
+          description: >
+            Host architecture (e.g. x86_64, arm, ppc, mips).
+        - name: os.platform
+          type: keyword
+          description: >
+            OS platform (e.g. centos, ubuntu, windows).
+        - name: os.version
+          type: keyword
+          description: >
+            OS version.
+        - name: os.family
+          type: keyword
+          description: >
+            OS family (e.g. redhat, debian, freebsd, windows).
+        - name: ip
+          type: ip
+          description: >
+            List of IP-addresses.
+        - name: mac
+          type: keyword
+          description: >
+            List of hardware-addresses, usually MAC-addresses.
+
+- key: common
+  title: Common
+  description: >
+    Contains common fields available in all event types.
+  fields:
+
+    - name: metricset.module
+      description: >
+        The name of the module that generated the event.
+
+    - name: metricset.name
+      description: >
+        The name of the metricset that generated the event.
+
+    - name: metricset.host
+      description: >
+        Hostname of the machine from which the metricset was collected. This
+        field may not be present when the data was collected locally.
+
+    - name: metricset.rtt
+      type: long
+      required: true
+      description: >
+        Event round trip time in microseconds.
+
+    - name: metricset.namespace
+      type: keyword
+      description: >
+        Namespace of dynamic metricsets.
+
+    - name: type
+      required: true
+      example: metricsets
+      description: >
+        The document type. Always set to "doc".
+
+    - name: service.name
+      example: elasticsearch
+      description: >
+        Name of the service metricbeat fetches the data from.
+- key: docker
+  title: "Docker"
+  description: >
+    Docker stats collected from Docker.
+  release: ga
+  short_config: false
+  fields:
+    - name: docker
+      type: group
+      description: >
+        Information and statistics about docker's running containers.
+      fields:
+        - name: container
+          type: group
+          description: >
+            Docker container metrics.
+          release: ga
+          fields:
+            - name: command
+              type: keyword
+              description: >
+                Command that was executed in the Docker container.
+            - name: created
+              type: date
+              description: >
+                Date when the container was created.
+            - name: status
+              type: keyword
+              description: >
+                Container status.
+            - name: ip_addresses
+              type: keyword
+              description: >
+                Container IP addresses.
+            - name: size
+              type: group
+              description: >
+                Container size metrics.
+              fields:
+                - name: root_fs
+                  type: long
+                  description: >
+                     Total size of all the files in the container.
+                - name: rw
+                  type: long
+                  description: >
+                     Size of the files that have been created or changed since creation.
+            - name: tags
+              type: array
+              description: >
+                Image tags.
+        - name: cpu
+          type: group
+          description: >
+            Runtime CPU metrics.
+          release: ga
+          fields:
+            - name: kernel.pct
+              type: scaled_float
+              format: percentage
+              description: >
+                Percentage of time in kernel space.
+            - name: kernel.ticks
+              type: long
+              description: >
+                CPU ticks in kernel space.
+            - name: system.pct
+              type: scaled_float
+              format: percentage
+              description: >
+                Percentage of total CPU time in the system.
+            - name: system.ticks
+              type: long
+              description: >
+                CPU system ticks.
+            - name: user.pct
+              type: scaled_float
+              format: percentage
+              description: >
+                Percentage of time in user space.
+            - name: user.ticks
+              type: long
+              description: >
+                CPU ticks in user space.
+            - name: total.pct
+              type: scaled_float
+              format: percentage
+              description: >
+                Total CPU usage.
+            - name: core.*.pct
+              type: object
+              object_type: scaled_float
+              format: percentage
+              description: >
+                Percentage of CPU time in this core.
+            - name: core.*.ticks
+              type: object
+              object_type: long
+              description: >
+                Number of CPU ticks in this core.
+        - name: diskio
+          type: group
+          description: >
+            Disk I/O metrics.
+          release: ga
+          fields:
+            - name: read
+              type: group
+              description: >
+                Accumulated reads during the life of the container
+              fields:
+                - name: ops
+                  type: long
+                  description: >
+                    Number of reads during the life of the container
+                - name: bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Bytes read during the life of the container
+                - name: rate
+                  type: long
+                  description: >
+                    Number of current reads per second
+            - name: reads
+              type: scaled_float
+              deprecated: true
+              description: >
+                Number of current reads per second
+            - name: write
+              type: group
+              description: >
+                Accumulated writes during the life of the container
+              fields:
+                - name: ops
+                  type: long
+                  description: >
+                    Number of writes during the life of the container
+                - name: bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Bytes written during the life of the container
+                - name: rate
+                  type: long
+                  description: >
+                    Number of current writes per second
+            - name: writes
+              type: scaled_float
+              deprecated: true
+              description: >
+                Number of current writes per second
+            - name: summary
+              type: group
+              description: >
+                Accumulated reads and writes during the life of the container
+              fields:
+                - name: ops
+                  type: long
+                  description: >
+                    Number of I/O operations during the life of the container
+                - name: bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Bytes read and written during the life of the container
+                - name: rate
+                  type: long
+                  description: >
+                    Number of current operations per second
+            - name: total
+              type: scaled_float
+              deprecated: true
+              description: >
+                Number of reads and writes per second
+        - name: healthcheck
+          type: group
+          description: >
+            Docker container metrics.
+          release: ga
+          fields:
+            - name: failingstreak
+              type: integer
+              description: >
+                concurent failed check
+            - name: status
+              type: keyword
+              description: >
+                Healthcheck status code
+            - name: event
+              type: group
+              description: >
+                event fields.
+              fields:
+                - name: end_date
+                  type: date
+                  description: >
+                    Healthcheck end date
+                - name: start_date
+                  type: date
+                  description: >
+                    Healthcheck start date
+                - name: output
+                  type: keyword
+                  description: >
+                    Healthcheck output
+                - name: exit_code
+                  type: integer
+                  description: >
+                    Healthcheck status code
+        - name: image
+          type: group
+          description: >
+            Docker image metrics.
+          release: ga
+          fields:
+            - name: id
+              type: group
+              description: >
+                The image layers identifier.
+              fields:
+                - name: current
+                  type: keyword
+                  description: >
+                     Unique image identifier given upon its creation.
+                - name: parent
+                  type: keyword
+                  description: >
+                     Identifier of the image, if it exists, from which the current image directly descends.
+            - name: created
+              type: date
+              description: >
+                Date and time when the image was created.
+            - name: size
+              type: group
+              description: >
+                Image size layers.
+              fields:
+                - name: virtual
+                  type: long
+                  description: >
+                     Size of the image.
+                - name: regular
+                  type: long
+                  description: >
+                     Total size of the all cached images associated to the current image.
+        
+            - name: labels
+              type: object
+              object_type: keyword
+              description: >
+                Image labels.
+        
+            - name: tags
+              type: array
+              description: >
+                Image tags.
+        - name: info
+          type: group
+          description: >
+            Info metrics based on https://docs.docker.com/engine/reference/api/docker_remote_api_v1.24/#/display-system-wide-information.
+          release: ga
+          fields:
+            - name: containers
+              type: group
+              description: >
+                Overall container stats.
+              fields:
+                - name: paused
+                  type: long
+                  description: >
+                    Total number of paused containers.
+                - name: running
+                  type: long
+                  description: >
+                    Total number of running containers.
+                - name: stopped
+                  type: long
+                  description: >
+                    Total number of stopped containers.
+                - name: total
+                  type: long
+                  description: >
+                    Total number of existing containers.
+            - name: id
+              type: keyword
+              description: >
+                Unique Docker host identifier.
+        
+            - name: images
+              type: long
+              description: >
+                Total number of existing images.
+        - name: memory
+          type: group
+          description: >
+            Memory metrics.
+          release: ga
+          fields:
+        
+            - name: fail.count
+              type: scaled_float
+              description: >
+                Fail counter.
+            - name: limit
+              type: long
+              format: bytes
+              description: >
+                Memory limit.
+            - name: rss
+              type: group
+              description: >
+                RSS memory stats.
+              fields:
+                - name: total
+                  type: long
+                  format: bytes
+                  description: >
+                    Total memory resident set size.
+                - name: pct
+                  type: scaled_float
+                  format: percentage
+                  description: >
+                    Memory resident set size percentage.
+            - name: usage
+              type: group
+              description: >
+                Usage memory stats.
+              fields:
+                - name: max
+                  type: long
+                  format: bytes
+                  description: >
+                    Max memory usage.
+                - name: pct
+                  type: scaled_float
+                  format: percentage
+                  description: >
+                    Memory usage percentage.
+                - name: total
+                  type: long
+                  format: bytes
+                  description: >
+                    Total memory usage.
+        - name: network
+          type: group
+          description: >
+            Network metrics.
+          release: ga
+          fields:
+        
+            - name: interface
+              type: keyword
+              description: >
+                Network interface name.
+            - name: in
+              type: group
+              deprecated: true
+              description: >
+                Incoming network stats per second.
+              fields:
+                - name: bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Total number of incoming bytes.
+                - name: dropped
+                  type: scaled_float
+                  description: >
+                    Total number of dropped incoming packets.
+                - name: errors
+                  type: long
+                  description: >
+                    Total errors on incoming packets.
+                - name: packets
+                  type: long
+                  description: >
+                    Total number of incoming packets.
+            - name: out
+              type: group
+              deprecated: true
+              description: >
+                Outgoing network stats per second.
+              fields:
+                - name: bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Total number of outgoing bytes.
+                - name: dropped
+                  type: scaled_float
+                  description: >
+                    Total number of dropped outgoing packets.
+                - name: errors
+                  type: long
+                  description: >
+                    Total errors on outgoing packets.
+                - name: packets
+                  type: long
+                  description: >
+                    Total number of outgoing packets.
+            - name: inbound
+              type: group
+              deprecated: true
+              description: >
+                Incoming network stats since the container started.
+              fields:
+                - name: bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Total number of incoming bytes.
+                - name: dropped
+                  type: long
+                  description: >
+                    Total number of dropped incoming packets.
+                - name: errors
+                  type: long
+                  description: >
+                    Total errors on incoming packets.
+                - name: packets
+                  type: long
+                  description: >
+                    Total number of incoming packets.
+            - name: outbound
+              type: group
+              deprecated: true
+              description: >
+                Outgoing network stats since the container started.
+              fields:
+                - name: bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Total number of outgoing bytes.
+                - name: dropped
+                  type: long
+                  description: >
+                    Total number of dropped outgoing packets.
+                - name: errors
+                  type: long
+                  description: >
+                    Total errors on outgoing packets.
+                - name: packets
+                  type: long
+                  description: >
+                    Total number of outgoing packets.
+- key: elasticsearch
+  title: "Elasticsearch"
+  description: >
+    Elasticsearch module
+  release: beta
+  settings: ["ssl"]
+  short_config: false
+  fields:
+    - name: elasticsearch
+      type: group
+      description: >
+      fields:
+        - name: cluster.name
+          type: keyword
+          description: >
+            Elasticsearch cluster name.
+
+        - name: cluster.id
+          type: keyword
+          description: >
+            Elasticsearch cluster id.
+
+        - name: cluster.state.id
+          type: keyword
+          description: >
+            Elasticsearch state id.
+        - name: cluster.stats
+          type: group
+          description: >
+            Cluster stats
+          release: beta
+          fields:
+            - name: status
+              type: keyword
+              description: >
+                Cluster status (green, yellow, red).
+            - name: nodes
+              type: group
+              description: >
+                Nodes statistics.
+              fields:
+              - name: count
+                type: long
+                description: >
+                  Total number of nodes in cluster.
+              - name: master
+                type: long
+                description: >
+                  Number of master-eligible nodes in cluster.
+              - name: data
+                type: long
+                description: >
+                  Number of data nodes in cluster.
+            - name: indices
+              type: group
+              description: >
+                Indices statistics.
+              fields:
+              - name: count
+                type: long
+                description: >
+                  Total number of indices in cluster.
+              - name: shards
+                type: group
+                description: >
+                  Shard statistics.
+                fields:
+                - name: count
+                  type: long
+                  description: >
+                    Total number of shards in cluster.
+                - name: primaries
+                  type: long
+                  description: >
+                    Total number of primary shards in cluster.
+              - name: fielddata.memory.bytes
+                type: long
+                description: >
+                  Memory used for fielddata.
+        - name: index
+          type: group
+          description: >
+            index
+          release: beta
+          fields:
+            - name: name
+              type: keyword
+              description: >
+                Index name.
+            - name: total
+              type: group
+              fields:
+                - name: docs.count
+                  type: long
+                  description: >
+                    Total number of documents in the index.
+                - name: docs.deleted
+                  type: long
+                  description: >
+                    Total number of deleted documents in the index.
+                - name: store.size.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Total size of the index in bytes.
+                - name: segments.count
+                  type: long
+                  description: >
+                    Total number of index segments.
+                - name: segments.memory.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Total number of memory used by the segments in bytes.
+        
+        - name: index.recovery
+          type: group
+          description: >
+            index
+          release: beta
+          fields:
+            - name: id
+              type: long
+              description: >
+                Shard recovery id.
+            - name: type
+              type: keyword
+              description: >
+                Shard recovery type.
+            - name: primary
+              type: boolean
+              description: >
+                True if primary shard.
+            - name: stage
+              type: keyword
+              description: >
+                Recovery stage.
+        
+            - name: target.id
+              type: keyword
+              description: >
+                Target node id.
+            - name: target.host
+              type: ip
+              description: >
+                Target node host address.
+            - name: target.name
+              type: keyword
+              description: >
+                Target node name.
+        
+            - name: source.id
+              type: keyword
+              description: >
+                Source node id.
+            - name: source.host
+              type: ip
+              description: >
+                Source node host address.
+            - name: source.name
+              type: keyword
+              description: >
+                Source node name.
+        - name: index.summary
+          type: group
+          description: >
+            index
+          release: beta
+          fields:
+            - name: primaries
+              type: group
+              fields:
+                - name: docs.count
+                  type: long
+                  description: >
+                    Total number of documents in the index.
+                - name: docs.deleted
+                  type: long
+                  description: >
+                    Total number of deleted documents in the index.
+                - name: store.size.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Total size of the index in bytes.
+                - name: segments.count
+                  type: long
+                  description: >
+                    Total number of index segments.
+                - name: segments.memory.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Total number of memory used by the segments in bytes.
+            - name: total
+              type: group
+              fields:
+                - name: docs.count
+                  type: long
+                  description: >
+                    Total number of documents in the index.
+                - name: docs.deleted
+                  type: long
+                  description: >
+                    Total number of deleted documents in the index.
+                - name: store.size.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Total size of the index in bytes.
+                - name: segments.count
+                  type: long
+                  description: >
+                    Total number of index segments.
+                - name: segments.memory.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Total number of memory used by the segments in bytes.
+        - name: ml.job
+          type: group
+          description: >
+            ml
+          release: beta
+          fields:
+            - name: id
+              type: keyword
+              description: >
+                Unique ml job id.
+            - name: state
+              type: keyword
+              description: >
+                Job state.
+            - name: data_counts.processed_record_count
+              type: long
+              description: >
+                Processed data events.
+            - name: data_counts.invalid_date_count
+              type: long
+              description: >
+                The number of records with either a missing date field or a date that could not be parsed.
+        
+        
+        - name: node
+          type: group
+          description: >
+            node
+          release: beta
+          fields:
+            - name: name
+              type: keyword
+              description: >
+                Node name.
+            - name: version
+              type: keyword
+              description: >
+                Node version.
+            - name: jvm
+              type: group
+              description: >
+                JVM Info.
+              fields:
+                - name: version
+                  type: keyword
+                  description: >
+                    JVM version.
+                - name: memory.heap.init.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Heap init used by the JVM in bytes.
+                - name: memory.heap.max.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Heap max used by the JVM in bytes.
+                - name: memory.nonheap.init.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Non-Heap init used by the JVM in bytes.
+                - name: memory.nonheap.max.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Non-Heap max used by the JVM in bytes.
+            - name: process.mlockall
+              type: boolean
+              description: >
+                If process locked in memory.
+        - name: node.stats
+          type: group
+          description: >
+            node_stats
+          release: beta
+          fields:
+            - name: indices
+              type: group
+              description: >
+                Node indices stats
+              fields:
+                - name: docs.count
+                  type: long
+                  description: >
+                    Total number of existing documents.
+                - name: docs.deleted
+                  type: long
+                  description: >
+                    Total number of deleted documents.
+                - name: segments.count
+                  type: long
+                  description: >
+                    Total number of segments.
+                - name: segments.memory.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Total size of segments in bytes.
+                - name: store.size.bytes
+                  type: long
+                  description: >
+                    Total size of the store in bytes.
+            - name: jvm.mem.pools
+              type: group
+              description: >
+                JVM memory pool stats
+              fields:
+                - name: old
+                  type: group
+                  description: >
+                    Old memory pool stats.
+                  fields:
+                    - name: max.bytes
+                      type: long
+                      format: bytes
+                      description:
+                        Max bytes.
+                    - name: peak.bytes
+                      type: long
+                      format: bytes
+                      description:
+                        Peak bytes.
+                    - name: peak_max.bytes
+                      type: long
+                      format: bytes
+                      description:
+                        Peak max bytes.
+                    - name: used.bytes
+                      type: long
+                      format: bytes
+                      description:
+                        Used bytes.
+                - name: young
+                  type: group
+                  description: >
+                    Young memory pool stats.
+                  fields:
+                    - name: max.bytes
+                      type: long
+                      format: bytes
+                      description:
+                        Max bytes.
+                    - name: peak.bytes
+                      type: long
+                      format: bytes
+                      description:
+                        Peak bytes.
+                    - name: peak_max.bytes
+                      type: long
+                      format: bytes
+                      description:
+                        Peak max bytes.
+                    - name: used.bytes
+                      type: long
+                      format: bytes
+                      description:
+                        Used bytes.
+                - name: survivor
+                  type: group
+                  description: >
+                    Survivor memory pool stats.
+                  fields:
+                    - name: max.bytes
+                      type: long
+                      format: bytes
+                      description:
+                        Max bytes.
+                    - name: peak.bytes
+                      type: long
+                      format: bytes
+                      description:
+                        Peak bytes.
+                    - name: peak_max.bytes
+                      type: long
+                      format: bytes
+                      description:
+                        Peak max bytes.
+                    - name: used.bytes
+                      type: long
+                      format: bytes
+                      description:
+                        Used bytes.
+        
+            - name: jvm.gc.collectors
+              type: group
+              description: >
+                GC collector stats.
+              fields:
+                - name: old.collection
+                  type: group
+                  description: >
+                    Old collection gc.
+                  fields:
+                    - name: count
+                      type: long
+                      description: >
+                    - name: ms
+                      type: long
+                      description: >
+                - name: young.collection
+                  type: group
+                  description: >
+                    Young collection gc.
+                  fields:
+                    - name: count
+                      type: long
+                      description: >
+                    - name: ms
+                      type: long
+                      description: >
+        
+            - name: fs.summary
+              type: group
+              description: >
+                File system summary
+              fields:
+                - name: total.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                - name: free.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                - name: available.bytes
+                  type: long
+                  format: bytes
+                  description: >
+        - name: cluster.pending_task
+          type: group
+          description: >
+            `cluster.pending_task` contains a pending task description.
+          release: beta
+          fields:
+            - name: insert_order
+              type: long
+              description: >
+                Insert order
+            - name: priority
+              type: long
+              description: >
+                Priority
+            - name: source
+              type: keyword
+              description: >
+                Source. For example: put-mapping
+            - name: time_in_queue.ms
+              type: long
+              description: >
+                Time in queue
+        - name: shard
+          type: group
+          description: >
+            shard fields
+          release: beta
+          fields:
+            - name: primary
+              type: boolean
+              description: >
+                True if this is the primary shard.
+            - name: number
+              type: long
+              description: >
+                The number of this shard.
+        
+            - name: state
+              type: keyword
+              description: >
+                The state of this shard.
+- key: kibana
+  title: "Kibana"
+  description: >
+    Kibana module
+  short_config: false
+  release: beta
+  settings: ["ssl"]
+  fields:
+    - name: kibana
+      type: group
+      description: >
+      fields:
+        - name: stats
+          type: group
+          description: >
+            Kibana stats and run-time metrics.
+          release: beta
+          fields:
+            - name: uuid
+              type: keyword
+              description: >
+                Kibana instance UUID
+            - name: name
+              type: text
+              description: >
+                Kibana instance name
+            - name: index
+              type: keyword
+              description: >
+                Name of Kibana's internal index
+            - name: host.name
+              type: keyword
+              description: >
+                Kibana instance hostname
+            - name: transport_address
+              type: keyword
+              description: >
+                Kibana server's hostname and port
+            - name: version
+              type: keyword
+              description: >
+                Kibana version
+            - name: snapshot
+              type: boolean
+              description: >
+                Whether the Kibana build is a snapshot build
+            - name: status
+              type: keyword
+              description: >
+                Kibana instance's health status
+            - name: concurrent_connections
+              type: long
+              description: >
+                Number of client connections made to the server. Note that browsers can send multiple simultaneous connections to request multiple server assets at once, and they can re-use established connections.
+            - name: process
+              type: group
+              description: >
+                Process metrics
+              fields:
+              - name: event_loop_delay.ms
+                type: scaled_float
+                description: >
+                  Event loop delay in milliseconds
+              - name: memory.heap
+                type: group
+                description: >
+                  Process heap metrics
+                fields:
+                - name: total.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Total heap allocated to process in bytes
+                - name: used.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Heap used by process in bytes
+                - name: size_limit.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Max. old space size allocated to Node.js process, in bytes
+                - name: uptime.ms
+                  type: long
+                  description: >
+                    Uptime of process in milliseconds
+            - name: request
+              type: group
+              description: >
+                  Request count metrics
+              fields:
+                - name: disconnects
+                  type: long
+                  description: >
+                    Number of requests that were disconnected
+                - name: total
+                  type: long
+                  description: >
+                    Total number of requests
+            - name: response_time
+              type: group
+              description: >
+                Response times metrics
+              fields:
+                - name: avg.ms
+                  type: long
+                  description: >
+                    Average response time in milliseconds
+                - name: max.ms
+                  type: long
+                  description: >
+                    Maximum response time in milliseconds
+        - name: status
+          type: group
+          description: >
+            Status fields
+          release: beta
+          fields:
+            - name: name
+              type: keyword
+              description: >
+                Kibana instance name.
+            - name: uuid
+              type: keyword
+              description: >
+                Kibana instance uuid.
+            - name: version.number
+              type: keyword
+              description: >
+                Kibana version number.
+            - name: status.overall.state
+              type: keyword
+              description: >
+                Kibana overall state.
+            - name: metrics
+              type: group
+              description: >
+                Metrics fields
+              fields:
+                - name: concurrent_connections
+                  type: long
+                  description: >
+                    Current concurrent connections.
+                - name: requests
+                  type: group
+                  description: >
+                    Request statistics.
+                  fields:
+                    - name: disconnects
+                      type: long
+                      description: >
+                        Total number of disconnected connections.
+                    - name: total
+                      type: long
+                      description: >
+                        Total number of connections.
+- key: nginx
+  title: "Nginx"
+  description: >
+    Nginx server status metrics collected from various modules.
+  short_config: false
+  release: ga
+  settings: ["ssl"]
+  fields:
+    - name: nginx
+      type: group
+      description: >
+        `nginx` contains the metrics that were scraped from nginx.
+      fields:
+        - name: stubstatus
+          type: group
+          description: >
+            `stubstatus` contains the metrics that were scraped from the ngx_http_stub_status_module status page.
+          release: ga
+          fields:
+            - name: hostname
+              type: keyword
+              description: >
+                Nginx hostname.
+            - name: active
+              type: long
+              description: >
+                The current number of active client connections including Waiting connections.
+            - name: accepts
+              type: long
+              description: >
+                The total number of accepted client connections.
+            - name: handled
+              type: long
+              description: >
+                The total number of handled client connections.
+            - name: dropped
+              type: long
+              description: >
+                The total number of dropped client connections.
+            - name: requests
+              type: long
+              description: >
+                The total number of client requests.
+            - name: current
+              type: long
+              description: >
+                The current number of client requests.
+            - name: reading
+              type: long
+              description: >
+                The current number of connections where Nginx is reading the request header.
+            - name: writing
+              type: long
+              description: >
+                The current number of connections where Nginx is writing the response back to the client.
+            - name: waiting
+              type: long
+              description: >
+                The current number of idle client connections waiting for a request.
+- key: system
+  title: "System"
+  description: >
+    System status metrics, like CPU and memory usage, that are collected from the operating system.
+  short_config: true
+  release: ga
+  fields:
+    - name: system
+      type: group
+      description: >
+        `system` contains local system metrics.
+      fields:
+        - name: core
+          type: group
+          description: >
+            `system-core` contains CPU metrics for a single core of a multi-core system.
+          release: ga
+          fields:
+            - name: id
+              type: long
+              description: >
+                CPU Core number.
+        
+            # Percentages
+            - name: user.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in user space.
+        
+            - name: user.ticks
+              type: long
+              description: >
+               The amount of CPU time spent in user space.
+        
+            - name: system.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in kernel space.
+        
+            - name: system.ticks
+              type: long
+              description: >
+                The amount of CPU time spent in kernel space.
+        
+            - name: nice.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent on low-priority processes.
+        
+            - name: nice.ticks
+              type: long
+              description: >
+                The amount of CPU time spent on low-priority processes.
+        
+            - name: idle.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent idle.
+        
+            - name: idle.ticks
+              type: long
+              description: >
+                The amount of CPU time spent idle.
+        
+            - name: iowait.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in wait (on disk).
+        
+            - name: iowait.ticks
+              type: long
+              description: >
+                The amount of CPU time spent in wait (on disk).
+        
+            - name: irq.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent servicing and handling hardware interrupts.
+        
+            - name: irq.ticks
+              type: long
+              description: >
+                The amount of CPU time spent servicing and handling hardware interrupts.
+        
+            - name: softirq.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent servicing and handling software interrupts.
+        
+            - name: softirq.ticks
+              type: long
+              description: >
+                The amount of CPU time spent servicing and handling software interrupts.
+        
+            - name: steal.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in involuntary wait by the virtual CPU while the hypervisor
+                was servicing another processor.
+                Available only on Unix.
+        
+            - name: steal.ticks
+              type: long
+              description: >
+                The amount of CPU time spent in involuntary wait by the virtual CPU while the hypervisor
+                was servicing another processor.
+                Available only on Unix.
+        - name: cpu
+          type: group
+          description: >
+            `cpu` contains local CPU stats.
+          release: ga
+          fields:
+            - name: cores
+              type: long
+              description: >
+                The number of CPU cores present on the host. The non-normalized
+                percentages will have a maximum value of `100% * cores`. The
+                normalized percentages already take this value into account and have
+                a maximum value of 100%.
+        
+            # Percentages
+            - name: user.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in user space. On multi-core systems,
+                you can have percentages that are greater than 100%. For example, if 3
+                cores are at 60% use, then the `system.cpu.user.pct` will be 180%.
+        
+            - name: system.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in kernel space.
+        
+            - name: nice.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent on low-priority processes.
+        
+            - name: idle.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent idle.
+        
+            - name: iowait.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in wait (on disk).
+        
+            - name: irq.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent servicing and handling hardware interrupts.
+        
+            - name: softirq.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent servicing and handling software interrupts.
+        
+            - name: steal.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in involuntary wait by the virtual CPU while the hypervisor
+                was servicing another processor.
+                Available only on Unix.
+        
+            - name: total.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in states other than Idle and IOWait.
+        
+            # Normalized Percentages
+            - name: user.norm.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in user space.
+        
+            - name: system.norm.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in kernel space.
+        
+            - name: nice.norm.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent on low-priority processes.
+        
+            - name: idle.norm.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent idle.
+        
+            - name: iowait.norm.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in wait (on disk).
+        
+            - name: irq.norm.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent servicing and handling hardware interrupts.
+        
+            - name: softirq.norm.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent servicing and handling software interrupts.
+        
+            - name: steal.norm.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time spent in involuntary wait by the virtual CPU while the hypervisor
+                was servicing another processor.
+                Available only on Unix.
+        
+            - name: total.norm.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of CPU time in states other than Idle and IOWait, normalised by the number of cores.
+        
+        
+            # Ticks
+            - name: user.ticks
+              type: long
+              description: >
+               The amount of CPU time spent in user space.
+        
+            - name: system.ticks
+              type: long
+              description: >
+                The amount of CPU time spent in kernel space.
+        
+            - name: nice.ticks
+              type: long
+              description: >
+                The amount of CPU time spent on low-priority processes.
+        
+            - name: idle.ticks
+              type: long
+              description: >
+                The amount of CPU time spent idle.
+        
+            - name: iowait.ticks
+              type: long
+              description: >
+                The amount of CPU time spent in wait (on disk).
+        
+            - name: irq.ticks
+              type: long
+              description: >
+                The amount of CPU time spent servicing and handling hardware interrupts.
+        
+            - name: softirq.ticks
+              type: long
+              description: >
+                The amount of CPU time spent servicing and handling software interrupts.
+        
+            - name: steal.ticks
+              type: long
+              description: >
+                The amount of CPU time spent in involuntary wait by the virtual CPU while the hypervisor
+                was servicing another processor.
+                Available only on Unix.
+        - name: diskio
+          type: group
+          description: >
+            `disk` contains disk IO metrics collected from the operating system.
+          release: ga
+          fields:
+            - name: name
+              type: keyword
+              example: sda1
+              description: >
+                The disk name.
+        
+            - name: serial_number
+              type: keyword
+              description: >
+                The disk's serial number. This may not be provided by all operating
+                systems.
+        
+            - name: read.count
+              type: long
+              description: >
+                The total number of reads completed successfully.
+        
+            - name: write.count
+              type: long
+              description: >
+                The total number of writes completed successfully.
+        
+            - name: read.bytes
+              type: long
+              format: bytes
+              description: >
+                The total number of bytes read successfully. On Linux this is
+                the number of sectors read multiplied by an assumed sector size of 512.
+        
+            - name: write.bytes
+              type: long
+              format: bytes
+              description: >
+                The total number of bytes written successfully. On Linux this is
+                the number of sectors written multiplied by an assumed sector size of
+                512.
+        
+            - name: read.time
+              type: long
+              description: >
+                The total number of milliseconds spent by all reads.
+        
+            - name: write.time
+              type: long
+              description: >
+                The total number of milliseconds spent by all writes.
+        
+            - name: io.time
+              type: long
+              description: >
+                The total number of of milliseconds spent doing I/Os.
+        
+            - name: iostat.read.request.merges_per_sec
+              type: float
+              description: >
+                  The number of read requests merged per second that were queued to the device.
+        
+            - name: iostat.write.request.merges_per_sec
+              type: float
+              description: >
+                  The number of write requests merged per second that were queued to the device.
+        
+            - name: iostat.read.request.per_sec
+              type: float
+              description: >
+                  The number of read requests that were issued to the device per second
+        
+            - name: iostat.write.request.per_sec
+              type: float
+              description: >
+                  The number of write requests that were issued to the device per second
+        
+            - name: iostat.read.per_sec.bytes
+              type: float
+              description: >
+                  The number of Bytes read from the device per second.
+              format: bytes
+        
+            - name: iostat.write.per_sec.bytes
+              type: float
+              description: >
+                  The number of Bytes write from the device per second.
+              format: bytes
+        
+            - name: iostat.request.avg_size
+              type: float
+              description: >
+                  The average size (in sectors) of the requests that were issued to the device.
+        
+            - name: iostat.queue.avg_size
+              type: float
+              description: >
+                  The average queue length of the requests that were issued to the device.
+        
+            - name: iostat.await
+              type: float
+              description: >
+                  The average time spent for requests issued to the device to be served.
+        
+            - name: iostat.service_time
+              type: float
+              description: >
+                  The average service time (in milliseconds) for I/O requests that were issued to the device.
+        
+            - name: iostat.busy
+              type: float
+              description: >
+                  Percentage of CPU time during which I/O requests were issued to the device (bandwidth utilization for the device). Device saturation occurs when this value is close to 100%.
+        - name: filesystem
+          type: group
+          description: >
+            `filesystem` contains local filesystem stats.
+          release: ga
+          fields:
+            - name: available
+              type: long
+              format: bytes
+              description: >
+                The disk space available to an unprivileged user in bytes.
+            - name: device_name
+              type: keyword
+              description: >
+                The disk name. For example: `/dev/disk1`
+            - name: type
+              type: keyword
+              description: >
+                The disk type. For example: `ext4`
+            - name: mount_point
+              type: keyword
+              description: >
+                The mounting point. For example: `/`
+            - name: files
+              type: long
+              description: >
+                The total number of file nodes in the file system.
+            - name: free
+              type: long
+              format: bytes
+              description: >
+                The disk space available in bytes.
+            - name: free_files
+              type: long
+              description: >
+                The number of free file nodes in the file system.
+            - name: total
+              type: long
+              format: bytes
+              description: >
+                The total disk space in bytes.
+            - name: used.bytes
+              type: long
+              format: bytes
+              description: >
+                The used disk space in bytes.
+            - name: used.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of used disk space.
+        
+        
+        - name: fsstat
+          type: group
+          description: >
+            `system.fsstat` contains filesystem metrics aggregated from all mounted
+            filesystems.
+          release: ga
+          fields:
+            - name: count
+              type: long
+              description: Number of file systems found.
+            - name: total_files
+              type: long
+              description: Total number of files.
+            - name: total_size
+              format: bytes
+              type: group
+              description: Nested file system docs.
+              fields:
+                - name: free
+                  type: long
+                  format: bytes
+                  description: >
+                    Total free space.
+                - name: used
+                  type: long
+                  format: bytes
+                  description: >
+                    Total used space.
+                - name: total
+                  type: long
+                  format: bytes
+                  description: >
+                    Total space (used plus free).
+        - name: load
+          type: group
+          description: >
+            CPU load averages.
+          release: ga
+          fields:
+            - name: "1"
+              type: scaled_float
+              scaling_factor: 100
+              description: >
+                Load average for the last minute.
+            - name: "5"
+              type: scaled_float
+              scaling_factor: 100
+              description: >
+                Load average for the last 5 minutes.
+            - name: "15"
+              type: scaled_float
+              scaling_factor: 100
+              description: >
+                Load average for the last 15 minutes.
+        
+            - name: "norm.1"
+              type: scaled_float
+              scaling_factor: 100
+              description: >
+                Load for the last minute divided by the number of cores.
+        
+            - name: "norm.5"
+              type: scaled_float
+              scaling_factor: 100
+              description: >
+                Load for the last 5 minutes divided by the number of cores.
+        
+            - name: "norm.15"
+              type: scaled_float
+              scaling_factor: 100
+              description: >
+                Load for the last 15 minutes divided by the number of cores.
+        
+            - name: "cores"
+              type: long
+              description: >
+                The number of CPU cores present on the host.
+        - name: memory
+          type: group
+          description: >
+            `memory` contains local memory stats.
+          release: ga
+          fields:
+            - name: total
+              type: long
+              format: bytes
+              description: >
+                Total memory.
+        
+            - name: used.bytes
+              type: long
+              format: bytes
+              description: >
+                Used memory.
+        
+            - name: free
+              type: long
+              format: bytes
+              description: >
+                The total amount of free memory in bytes. This value does not include memory consumed by system caches and
+                buffers (see system.memory.actual.free).
+        
+            - name: used.pct
+              type: scaled_float
+              format: percent
+              description: >
+                The percentage of used memory.
+        
+            - name: actual
+              type: group
+              description: >
+                Actual memory used and free.
+              fields:
+        
+                - name: used.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Actual used memory in bytes. It represents the difference between the total and the available memory. The
+                    available memory depends on the OS. For more details, please check `system.actual.free`.
+        
+                - name: free
+                  type: long
+                  format: bytes
+                  description: >
+                    Actual free memory in bytes. It is calculated based on the OS. On Linux it consists of the free memory
+                    plus caches and buffers. On OSX it is a sum of free memory and the inactive memory. On Windows, it is equal
+                    to `system.memory.free`.
+        
+                - name: used.pct
+                  type: scaled_float
+                  format: percent
+                  description: >
+                    The percentage of actual used memory.
+        
+            - name: swap
+              type: group
+              prefix: "[float]"
+              description: This group contains statistics related to the swap memory usage on the system.
+              fields:
+                - name: total
+                  type: long
+                  format: bytes
+                  description: >
+                    Total swap memory.
+        
+                - name: used.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Used swap memory.
+        
+                - name: free
+                  type: long
+                  format: bytes
+                  description: >
+                    Available swap memory.
+        
+                - name: used.pct
+                  type: scaled_float
+                  format: percent
+                  description: >
+                    The percentage of used swap memory.
+        
+            - name: hugepages
+              type: group
+              prefix: "[float]"
+              description: This group contains statistics related to huge pages usage on the system.
+              fields:
+                - name: total
+                  type: long
+                  format: number
+                  description: >
+                    Number of huge pages in the pool.
+        
+                - name: used.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    Memory used in allocated huge pages.
+        
+                - name: used.pct
+                  type: long
+                  format: percent
+                  description: >
+                    Percentage of huge pages used.
+        
+                - name: free
+                  type: long
+                  format: number
+                  description: >
+                    Number of available huge pages in the pool.
+        
+                - name: reserved
+                  type: long
+                  format: number
+                  description: >
+                    Number of reserved but not allocated huge pages in the pool.
+        
+                - name: surplus
+                  type: long
+                  format: number
+                  description: >
+                    Number of overcommited huge pages.
+        
+                - name: default_size
+                  type: long
+                  format: bytes
+                  description: >
+                    Default size for huge pages.
+        - name: network
+          type: group
+          description: >
+            `network` contains network IO metrics for a single network interface.
+          release: ga
+          fields:
+            - name: name
+              type: keyword
+              example: eth0
+              description: >
+                The network interface name.
+        
+            - name: out.bytes
+              type: long
+              format: bytes
+              description: >
+                The number of bytes sent.
+        
+            - name: in.bytes
+              type: long
+              format: bytes
+              description: >
+                The number of bytes received.
+        
+            - name: out.packets
+              type: long
+              description: >
+                The number of packets sent.
+        
+            - name: in.packets
+              type: long
+              description: >
+                The number or packets received.
+        
+            - name: in.errors
+              type: long
+              description: >
+                The number of errors while receiving.
+        
+            - name: out.errors
+              type: long
+              description: >
+                The number of errors while sending.
+        
+            - name: in.dropped
+              type: long
+              description: >
+                The number of incoming packets that were dropped.
+        
+            - name: out.dropped
+              type: long
+              description: >
+                The number of outgoing packets that were dropped. This value is always
+                0 on Darwin and BSD because it is not reported by the operating system.
+        - name: process
+          type: group
+          description: >
+            `process` contains process metadata, CPU metrics, and memory metrics.
+          release: ga
+          fields:
+            - name: name
+              type: keyword
+              description: >
+                The process name.
+            - name: state
+              type: keyword
+              description: >
+                The process state. For example: "running".
+            - name: pid
+              type: long
+              description: >
+                The process pid.
+            - name: ppid
+              type: long
+              description: >
+                The process parent pid.
+            - name: pgid
+              type: long
+              description: >
+                The process group id.
+            - name: cmdline
+              type: keyword
+              description: >
+                The full command-line used to start the process, including the
+                arguments separated by space.
+            - name: username
+              type: keyword
+              description: >
+                The username of the user that created the process. If the username
+                cannot be determined, the field will contain the user's
+                numeric identifier (UID). On Windows, this field includes the user's
+                domain and is formatted as `domain\username`.
+            - name: cwd
+              type: keyword
+              description: >
+                The current working directory of the process. This field is only
+                available on Linux.
+            - name: env
+              type: object
+              object_type: keyword
+              description: >
+                The environment variables used to start the process. The data is
+                available on FreeBSD, Linux, and OS X.
+            - name: cpu
+              type: group
+              prefix: "[float]"
+              description: CPU-specific statistics per process.
+              fields:
+                - name: user.ticks
+                  type: long
+                  description: >
+                    The amount of CPU time the process spent in user space.
+                - name: total.value
+                  type: long
+                  description: >
+                    The value of CPU usage since starting the process.
+                - name: total.pct
+                  type: scaled_float
+                  format: percent
+                  description: >
+                    The percentage of CPU time spent by the process since the last update. Its value is similar to the
+                    %CPU value of the process displayed by the top command on Unix systems.
+                - name: total.norm.pct
+                  type: scaled_float
+                  format: percent
+                  description: >
+                    The percentage of CPU time spent by the process since the last event.
+                    This value is normalized by the number of CPU cores and it ranges
+                    from 0 to 100%.
+                - name: system.ticks
+                  type: long
+                  description: >
+                    The amount of CPU time the process spent in kernel space.
+                - name: total.ticks
+                  type: long
+                  description: >
+                    The total CPU time spent by the process.
+                - name: start_time
+                  type: date
+                  description: >
+                    The time when the process was started.
+            - name: memory
+              type: group
+              description: Memory-specific statistics per process.
+              prefix: "[float]"
+              fields:
+                - name: size
+                  type: long
+                  format: bytes
+                  description: >
+                    The total virtual memory the process has.
+                - name: rss.bytes
+                  type: long
+                  format: bytes
+                  description: >
+                    The Resident Set Size. The amount of memory the process occupied in main memory (RAM).
+                - name: rss.pct
+                  type: scaled_float
+                  format: percent
+                  description: >
+                    The percentage of memory the process occupied in main memory (RAM).
+                - name: share
+                  type: long
+                  format: bytes
+                  description: >
+                    The shared memory the process uses.
+            - name: fd
+              type: group
+              description: >
+                File descriptor usage metrics. This set of metrics is available for
+                Linux and FreeBSD.
+              prefix: "[float]"
+              fields:
+                - name: open
+                  type: long
+                  description: The number of file descriptors open by the process.
+                - name: limit.soft
+                  type: long
+                  description: >
+                    The soft limit on the number of file descriptors opened by the
+                    process. The soft limit can be changed by the process at any time.
+                - name: limit.hard
+                  type: long
+                  description: >
+                    The hard limit on the number of file descriptors opened by the
+                    process. The hard limit can only be raised by root.
+            - name: cgroup
+              type: group
+              description: >
+                Metrics and limits from the cgroup of which the task is a member.
+                cgroup metrics are reported when the process has membership in a
+                non-root cgroup. These metrics are only available on Linux.
+              fields:
+                - name: id
+                  type: keyword
+                  description: >
+                    The ID common to all cgroups associated with this task.
+                    If there isn't a common ID used by all cgroups this field will be
+                    absent.
+        
+                - name: path
+                  type: keyword
+                  description: >
+                    The path to the cgroup relative to the cgroup subsystem's mountpoint.
+                    If there isn't a common path used by all cgroups this field will be
+                    absent.
+        
+                - name: cpu
+                  type: group
+                  description: >
+                    The cpu subsystem schedules CPU access for tasks in the cgroup.
+                    Access can be controlled by two separate schedulers, CFS and RT.
+                    CFS stands for completely fair scheduler which proportionally
+                    divides the CPU time between cgroups based on weight. RT stands for
+                    real time scheduler which sets a maximum amount of CPU time that
+                    processes in the cgroup can consume during a given period.
+        
+                  fields:
+                    - name: id
+                      type: keyword
+                      description: ID of the cgroup.
+        
+                    - name: path
+                      type: keyword
+                      description: >
+                        Path to the cgroup relative to the cgroup subsystem's
+                        mountpoint.
+        
+                    - name: cfs.period.us
+                      type: long
+                      description: >
+                        Period of time in microseconds for how regularly a
+                        cgroup's access to CPU resources should be reallocated.
+        
+                    - name: cfs.quota.us
+                      type: long
+                      description: >
+                        Total amount of time in microseconds for which all
+                        tasks in a cgroup can run during one period (as defined by
+                        cfs.period.us).
+        
+                    - name: cfs.shares
+                      type: long
+                      description: >
+                        An integer value that specifies a relative share of CPU time
+                        available to the tasks in a cgroup. The value specified in the
+                        cpu.shares file must be 2 or higher.
+        
+                    - name: rt.period.us
+                      type: long
+                      description: >
+                        Period of time in microseconds for how regularly a cgroup's
+                        access to CPU resources is reallocated.
+        
+                    - name: rt.runtime.us
+                      type: long
+                      description: >
+                        Period of time in microseconds for the longest continuous period
+                        in which the tasks in a cgroup have access to CPU resources.
+        
+                    - name: stats.periods
+                      type: long
+                      description: >
+                        Number of period intervals (as specified in cpu.cfs.period.us)
+                        that have elapsed.
+        
+                    - name: stats.throttled.periods
+                      type: long
+                      description: >
+                        Number of times tasks in a cgroup have been throttled (that is,
+                        not allowed to run because they have exhausted all of the
+                        available time as specified by their quota).
+        
+                    - name: stats.throttled.ns
+                      type: long
+                      description: >
+                        The total time duration (in nanoseconds) for which tasks in a
+                        cgroup have been throttled.
+        
+                - name: cpuacct
+                  type: group
+                  description: CPU accounting metrics.
+                  fields:
+                    - name: id
+                      type: keyword
+                      description: ID of the cgroup.
+        
+                    - name: path
+                      type: keyword
+                      description: >
+                        Path to the cgroup relative to the cgroup subsystem's
+                        mountpoint.
+        
+                    - name: total.ns
+                      type: long
+                      description: >
+                        Total CPU time in nanoseconds consumed by all tasks in the
+                        cgroup.
+        
+                    - name: stats.user.ns
+                      type: long
+                      description: CPU time consumed by tasks in user mode.
+        
+                    - name: stats.system.ns
+                      type: long
+                      description: CPU time consumed by tasks in user (kernel) mode.
+        
+                    - name: percpu
+                      type: object
+                      object_type: long
+                      description: >
+                        CPU time (in nanoseconds) consumed on each CPU by all tasks in
+                        this cgroup.
+        
+                - name: memory
+                  type: group
+                  description: Memory limits and metrics.
+                  fields:
+                    - name: id
+                      type: keyword
+                      description: ID of the cgroup.
+        
+                    - name: path
+                      type: keyword
+                      description: >
+                        Path to the cgroup relative to the cgroup subsystem's mountpoint.
+        
+                    - name: mem.usage.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Total memory usage by processes in the cgroup (in bytes).
+        
+                    - name: mem.usage.max.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        The maximum memory used by processes in the cgroup (in bytes).
+        
+                    - name: mem.limit.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        The maximum amount of user memory in bytes (including file
+                        cache) that tasks in the cgroup are allowed to use.
+        
+                    - name: mem.failures
+                      type: long
+                      description: >
+                        The number of times that the memory limit (mem.limit.bytes) was
+                        reached.
+        
+                    - name: memsw.usage.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        The sum of current memory usage plus swap space used by
+                        processes in the cgroup (in bytes).
+        
+                    - name: memsw.usage.max.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        The maximum amount of memory and swap space used by processes in
+                        the cgroup (in bytes).
+        
+                    - name: memsw.limit.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        The maximum amount for the sum of memory and swap usage
+                        that tasks in the cgroup are allowed to use.
+        
+                    - name: memsw.failures
+                      type: long
+                      description: >
+                        The number of times that the memory plus swap space limit
+                        (memsw.limit.bytes) was reached.
+        
+                    - name: kmem.usage.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Total kernel memory usage by processes in the cgroup (in bytes).
+        
+                    - name: kmem.usage.max.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        The maximum kernel memory used by processes in the cgroup (in
+                        bytes).
+        
+                    - name: kmem.limit.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        The maximum amount of kernel memory that tasks in the cgroup are
+                        allowed to use.
+        
+                    - name: kmem.failures
+                      type: long
+                      description: >
+                        The number of times that the memory limit (kmem.limit.bytes) was
+                        reached.
+        
+                    - name: kmem_tcp.usage.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Total memory usage for TCP buffers in bytes.
+        
+                    - name: kmem_tcp.usage.max.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        The maximum memory used for TCP buffers by processes in the
+                        cgroup (in bytes).
+        
+                    - name: kmem_tcp.limit.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        The maximum amount of memory for TCP buffers that tasks in the
+                        cgroup are allowed to use.
+        
+                    - name: kmem_tcp.failures
+                      type: long
+                      description: >
+                        The number of times that the memory limit (kmem_tcp.limit.bytes)
+                        was reached.
+        
+                    - name: stats.active_anon.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Anonymous and swap cache on active least-recently-used (LRU)
+                        list, including tmpfs (shmem), in bytes.
+        
+                    - name: stats.active_file.bytes
+                      type: long
+                      format: bytes
+                      description: File-backed memory on active LRU list, in bytes.
+        
+                    - name: stats.cache.bytes
+                      type: long
+                      format: bytes
+                      description: Page cache, including tmpfs (shmem), in bytes.
+        
+                    - name: stats.hierarchical_memory_limit.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Memory limit for the hierarchy that contains the memory cgroup,
+                        in bytes.
+        
+                    - name: stats.hierarchical_memsw_limit.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Memory plus swap limit for the hierarchy that contains the
+                        memory cgroup, in bytes.
+        
+                    - name: stats.inactive_anon.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Anonymous and swap cache on inactive LRU list, including tmpfs
+                        (shmem), in bytes
+        
+                    - name: stats.inactive_file.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        File-backed memory on inactive LRU list, in bytes.
+        
+                    - name: stats.mapped_file.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Size of memory-mapped mapped files, including tmpfs (shmem),
+                        in bytes.
+        
+                    - name: stats.page_faults
+                      type: long
+                      description: >
+                        Number of times that a process in the cgroup triggered a page
+                        fault.
+        
+                    - name: stats.major_page_faults
+                      type: long
+                      description: >
+                        Number of times that a process in the cgroup triggered a major
+                        fault. "Major" faults happen when the kernel actually has to
+                        read the data from disk.
+        
+                    - name: stats.pages_in
+                      type: long
+                      description: >
+                        Number of pages paged into memory. This is a counter.
+        
+                    - name: stats.pages_out
+                      type: long
+                      description: >
+                        Number of pages paged out of memory. This is a counter.
+        
+                    - name: stats.rss.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Anonymous and swap cache (includes transparent hugepages), not
+                        including tmpfs (shmem), in bytes.
+        
+                    - name: stats.rss_huge.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Number of bytes of anonymous transparent hugepages.
+        
+                    - name: stats.swap.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Swap usage, in bytes.
+        
+                    - name: stats.unevictable.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Memory that cannot be reclaimed, in bytes.
+        
+                - name: blkio
+                  type: group
+                  description: Block IO metrics.
+                  fields:
+                    - name: id
+                      type: keyword
+                      description: ID of the cgroup.
+        
+                    - name: path
+                      type: keyword
+                      description: >
+                        Path to the cgroup relative to the cgroup subsystems mountpoint.
+        
+                    - name: total.bytes
+                      type: long
+                      format: bytes
+                      description: >
+                        Total number of bytes transferred to and from all block devices
+                        by processes in the cgroup.
+        
+                    - name: total.ios
+                      type: long
+                      description: >
+                        Total number of I/O operations performed on all devices
+                        by processes in the cgroup as seen by the throttling policy.
+        - name: process.summary
+          title: Process Summary
+          type: group
+          description: >
+            Summary metrics for the processes running on the host.
+          release: ga
+          fields:
+            - name: total
+              type: long
+              description: >
+                Total number of processes on this host.
+            - name: running
+              type: long
+              description: >
+                Number of running processes on this host.
+            - name: idle
+              type: long
+              description: >
+                Number of idle processes on this host.
+            - name: sleeping
+              type: long
+              description: >
+                Number of sleeping processes on this host.
+            - name: stopped
+              type: long
+              description: >
+                Number of stopped processes on this host.
+            - name: zombie
+              type: long
+              description: >
+                Number of zombie processes on this host.
+            - name: unknown
+              type: long
+              description: >
+                Number of processes for which the state couldn't be retrieved or is unknown.
+        - name: raid
+          type: group
+          description: >
+            raid
+          release: ga
+          fields:
+            - name: name
+              type: keyword
+              description: >
+                Name of the device.
+            - name: activity_state
+              type: keyword
+              description: >
+                activity-state of the device.
+            - name: disks.active
+              type: long
+              description: >
+                 Number of active disks.
+            - name: disks.total
+              type: long
+              description: >
+                Total number of disks the device consists of.
+            - name: blocks.total
+              type: long
+              description: >
+                Number of blocks the device holds.
+            - name: blocks.synced
+              type: long
+              description: >
+                Number of blocks on the device that are in sync.
+        - name: socket
+          type: group
+          description: >
+            TCP sockets that are active.
+          release: ga
+          fields:
+            - name: direction
+              type: keyword
+              example: incoming
+              description: >
+                How the socket was initiated. Possible values are incoming, outgoing,
+                or listening.
+        
+            - name: family
+              type: keyword
+              example: ipv4
+              description: >
+                Address family.
+        
+            - name: local.ip
+              type: ip
+              example: 192.0.2.1 or 2001:0DB8:ABED:8536::1
+              description: >
+                Local IP address. This can be an IPv4 or IPv6 address.
+        
+            - name: local.port
+              type: long
+              example: 22
+              description: >
+                Local port.
+        
+            - name: remote.ip
+              type: ip
+              example: 192.0.2.1 or 2001:0DB8:ABED:8536::1
+              description: >
+                Remote IP address. This can be an IPv4 or IPv6 address.
+        
+            - name: remote.port
+              type: long
+              example: 22
+              description: >
+                Remote port.
+        
+            - name: remote.host
+              type: keyword
+              example: 76-211-117-36.nw.example.com.
+              description: >
+                PTR record associated with the remote IP. It is obtained via reverse
+                IP lookup.
+        
+            - name: remote.etld_plus_one
+              type: keyword
+              example: example.com.
+              description: >
+               The effective top-level domain (eTLD) of the remote host plus one more
+               label. For example, the eTLD+1 for "foo.bar.golang.org." is "golang.org.".
+               The data for determining the eTLD comes from an embedded copy of the data
+               from http://publicsuffix.org.
+        
+            - name: remote.host_error
+              type: keyword
+              description: >
+                Error describing the cause of the reverse lookup failure.
+        
+            - name: process.pid
+              type: long
+              description: >
+                ID of the process that opened the socket.
+        
+            - name: process.command
+              type: keyword
+              description: >
+                Name of the command (limited to 20 chars by the OS).
+        
+            - name: process.cmdline
+              type: keyword
+              description: >
+        
+            - name: process.exe
+              type: keyword
+              description: >
+                Absolute path to the executable.
+        
+            - name: user.id
+              type: long
+              description: >
+                UID of the user running the process.
+        
+            - name: user.name
+              type: keyword
+              description: >
+                Name of the user running the process.
+        - name: uptime
+          type: group
+          description: >
+            `uptime` contains the operating system uptime metric.
+          release: ga
+          fields:
+            - name: duration.ms
+              type: long
+              format: duration
+              input_format: milliseconds
+              description: >
+                The OS uptime in milliseconds.

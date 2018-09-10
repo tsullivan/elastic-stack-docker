@@ -16,6 +16,8 @@ metricbeat.modules:
   # Replace dots in labels with `_`. Set to false to keep dots
   labels.dedot: true
 
+setup.template.fields: "config/fields.yml"
+
 output.elasticsearch:
   hosts: "${ELASTICSEARCH_URL}"
   username: "${BEATS_WRITER_ES_USERNAME}"
