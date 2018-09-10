@@ -73,9 +73,7 @@ services:
       - "XPACK_REPORTING_ENCRYPTIONKEY=$SESSION_SECRET"
       - "XPACK_SECURITY_ENCRYPTIONKEY=$SESSION_SECRET"
       - "XPACK_SECURITY_SESSIONTIMEOUT=600000"
-    volumes:
-      - "./cert-bundle:$KBN_CERTS_DIR"
-      - "esdata-6.3:/usr/share/elasticsearch/data"
+    volumes: ["./cert-bundle:$KBN_CERTS_DIR"]
 
   metricbeat:
     container_name: "esd_metricbeat-6.4.0"
