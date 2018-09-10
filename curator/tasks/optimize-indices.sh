@@ -6,6 +6,6 @@ curator \
   optimize \
   --max_num_segments 1 \
   indices \
-  --prefix avocado \
+  --prefix logstash \
   --older-than 1 \
   --time-unit days

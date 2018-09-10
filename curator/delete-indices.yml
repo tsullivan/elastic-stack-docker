@@ -14,7 +14,7 @@ actions:
     filters:
     - filtertype: pattern
       kind: regex
-      value: ^(apm-|avocado-|metricbeat-|.monitoring-|.watcher-).*$
+      value: ^(apm-|logstash-|metricbeat-|.monitoring-|.watcher-).*$
       exclude: None
     - filtertype: age
       direction: older

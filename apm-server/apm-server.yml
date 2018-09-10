@@ -1,21 +1,3 @@
-metricbeat.modules:
-- module: docker
-  metricsets:
-    - "container"
-    - "cpu"
-    - "diskio"
-    - "healthcheck"
-    - "info"
-    #- "image"
-    - "memory"
-    - "network"
-  hosts: ["${DOCKER_HOST}"]
-  period: 10s
-  enabled: true
-
-  # Replace dots in labels with `_`. Set to false to keep dots
-  labels.dedot: true
-
 output.elasticsearch:
   hosts: "${ELASTICSEARCH_URL}"
   username: "${BEATS_WRITER_ES_USERNAME}"
