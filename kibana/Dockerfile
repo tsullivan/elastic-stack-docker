@@ -1,4 +1,4 @@
-FROM docker.elastic.co/kibana/kibana:6.4.0
+FROM docker.elastic.co/kibana/kibana:6.4.1
 
 ENV XPACK_GRAPH_ENABLED false
 ENV XPACK_GROKDEBUGGER_ENABLED false
@@ -6,7 +6,7 @@ ENV XPACK_ML_ENABLED false
 ENV XPACK_SEARCHPROFILER_ENABLED false
 ENV XPACK_XPACK_MAIN_TELEMETRY_ENABLED false
 
-RUN ./bin/kibana-plugin install https://download.elastic.co/kibana/canvas/kibana-canvas-0.1.2198.zip
+RUN ./bin/kibana-plugin install https://download.elastic.co/kibana/canvas/kibana-canvas-0.1.2199.zip
 
 # modified from: https://github.com/elastic/kibana-docker/issues/27
 # Jarpy's answer
