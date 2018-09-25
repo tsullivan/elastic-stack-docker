@@ -1,5 +1,5 @@
 {
-  "template": "avocado-tweets-*",
+  "template": "logstash-avocado-tweets-*",
   "settings": {
     "analysis": {
       "analyzer": {

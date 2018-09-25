@@ -16,7 +16,16 @@ metricbeat.modules:
   # Replace dots in labels with `_`. Set to false to keep dots
   labels.dedot: true
 
-output.elasticsearch:
-  hosts: "${ELASTICSEARCH_HOST}"
+setup.template.fields: "config/fields.yml"
 
-xpack.monitoring.enabled: true
+output.elasticsearch:
+  hosts: "${ELASTICSEARCH_URL}"
+  username: "${BEATS_WRITER_ES_USERNAME}"
+  password: "${BEATS_WRITER_ES_PASSWORD}"
+  ssl.certificate_authorities: ["${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}"]
+
+xpack.monitoring:
+  enabled: true
+  elasticsearch:
+    username: "${BEATS_SYSTEM_ES_USERNAME}"
+    password: "${BEATS_SYSTEM_ES_PASSWORD}"
