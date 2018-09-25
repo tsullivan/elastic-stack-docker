@@ -3,7 +3,7 @@ version: "2.2"
 services:
   es-proxy:
     container_name: "esd_nginx_elasticsearch-proxy"
-    image: "nginx"
+    image: "nginx:latest"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 48000
@@ -15,7 +15,7 @@ services:
 
   web:
     container_name: "esd_nginx_web_kibana-proxy"
-    image: "nginx"
+    image: "nginx:latest"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 48000
