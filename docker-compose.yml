@@ -44,9 +44,9 @@ services:
       - "xpack.security.enabled=true"
       - "xpack.security.http.ssl.enabled=true"
       - "xpack.security.transport.ssl.enabled=true"
-      - "xpack.ssl.key=$ES_CERTS_DIR/virtual-spice/virtual-spice.key"
-      - "xpack.ssl.certificate=$ES_CERTS_DIR/virtual-spice/virtual-spice.crt"
-      - "xpack.ssl.certificate_authorities=$ES_CERTS_DIR/ca/virtual-spice-ca.crt"
+      - "xpack.ssl.key=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
+      - "xpack.ssl.certificate=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
+      - "xpack.ssl.certificate_authorities=$ES_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
       - "xpack.security.transport.ssl.verification_mode=certificate"
       - "ELASTIC_PASSWORD=$ELASTIC_PASSWORD"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
@@ -67,9 +67,9 @@ services:
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
       - "ELASTICSEARCH_USERNAME=$KBN_ES_USERNAME"
       - "ELASTICSEARCH_PASSWORD=$KBN_ES_PASSWORD"
-      - "ELASTICSEARCH_SSL_KEY=$KBN_CERTS_DIR/virtual-spice/virtual-spice.key"
-      - "ELASTICSEARCH_SSL_CERTIFICATE=$KBN_CERTS_DIR/virtual-spice/virtual-spice.crt"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$KBN_CERTS_DIR/ca/virtual-spice-ca.crt"
+      - "ELASTICSEARCH_SSL_KEY=$KBN_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
+      - "ELASTICSEARCH_SSL_CERTIFICATE=$KBN_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
+      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$KBN_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
       - "ELASTICSEARCH_SSL_VERIFICATIONMODE=certificate"
       - "XPACK_REPORTING_CAPTURE_BROWSER_TYPE=chromium"
       - "XPACK_REPORTING_ENCRYPTIONKEY=$SESSION_SECRET"
@@ -90,7 +90,7 @@ services:
     env_file: [".env"]
     environment:
       - "DOCKER_HOST=unix:///var/run/docker.sock"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$METRICBEAT_CERTS_DIR/ca/virtual-spice-ca.crt"
+      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$METRICBEAT_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
     volumes:
       - "./cert-bundle:$METRICBEAT_CERTS_DIR"
       - "./metricbeat/config:/usr/share/metricbeat/config:ro"
@@ -106,7 +106,7 @@ services:
     env_file: [".env"]
     environment:
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$APM_CERTS_DIR/ca/virtual-spice-ca.crt"
+      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$APM_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
     volumes:
       - "./cert-bundle:$APM_CERTS_DIR"
       - "./apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro"
@@ -121,7 +121,7 @@ services:
     env_file: [".env"]
     environment:
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
-      - "ELASTICSEARCH_SSL_CERTIFICATE=$LOGSTASH_CERTS_DIR/virtual-spice/virtual-spice.crt"
+      - "ELASTICSEARCH_SSL_CERTIFICATE=$LOGSTASH_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
       - "XPACK_MONITORING_ENABLED=true"
       - "XPACK_MONITORING_ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
     volumes:
