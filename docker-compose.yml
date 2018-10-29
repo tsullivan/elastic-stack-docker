@@ -129,30 +129,30 @@ services:
       - "./logstash/pipeline:/usr/share/logstash/pipeline:ro"
       - "./logstash/avocado-tweets-wildcard.json:/usr/share/logstash/avocado-tweets-wildcard.json:ro"
 
-#  curator:
-#    container_name: "esd_curator-5.5"
-#    image: "tsullivan/curator-5.5"
-#    build: "./curator"
-#    env_file: [".env"]
-#    environment:
-#      - "CLIENT_HOST=$CURATOR_CLIENT_HOST"
-#      - "CLIENT_PORT=9200"
-#      - "MAX_INDEX_AGE=3"
-#    volumes:
-#      - "./cert-bundle:$CURATOR_CERTS_DIR"
-#      - "./curator/delete-indices.yml:/usr/share/curator/delete-indices.yml:ro"
-#      - "./curator/curator.yml:/usr/share/curator/curator.yml"
-#
-#  chatbot:
-#    container_name: "esd_my-chatbot"
-#    image: "tsullivan/chatbot"
-#    build: "$HOME/code/chatbot"
-#    cpu_period: 50000
-#    cpu_quota: 45000
-#    env_file: [".env"]
-#    environment:
-#      - "SESSION_SECRET=$SESSION_SECRET"
-#      - "ELASTIC_APM_SERVER_URL=$APM_SERVER_URL"
+  curator:
+    container_name: "esd_curator-5.5"
+    image: "tsullivan/curator-5.5"
+    build: "./curator"
+    env_file: [".env"]
+    environment:
+      - "CLIENT_HOST=$CURATOR_CLIENT_HOST"
+      - "CLIENT_PORT=9200"
+      - "MAX_INDEX_AGE=3"
+    volumes:
+      - "./cert-bundle:$CURATOR_CERTS_DIR"
+      - "./curator/delete-indices.yml:/usr/share/curator/delete-indices.yml:ro"
+      - "./curator/curator.yml:/usr/share/curator/curator.yml"
+
+  chatbot:
+    container_name: "esd_my-chatbot"
+    image: "tsullivan/chatbot"
+    build: "$HOME/code/chatbot"
+    cpu_period: 50000
+    cpu_quota: 45000
+    env_file: [".env"]
+    environment:
+      - "SESSION_SECRET=$SESSION_SECRET"
+      - "ELASTIC_APM_SERVER_URL=$APM_SERVER_URL"
 
 volumes:
   esdata-6.4:
