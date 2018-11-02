@@ -1,3 +1,5 @@
+VIRTUAL_HOST=foo.local
+
 ELASTICSEARCH_URL=https://es-proxy:9200
 ELASTIC_PASSWORD=PleaseChangeMe
 
@@ -11,6 +13,9 @@ CURATOR_CERTS_DIR=/usr/share/curator/certificates
 
 KBN_ES_USERNAME=kibana
 KBN_ES_PASSWORD=PleaseChangeMe
+
+XPACK_SECURITY_ENCRYPTIONKEY=somethingthatisverylongintermsofnumberofcharactersmaybethisisgood
+XPACK_REPORTING_ENCRYPTIONKEY=somethingthatisverylongintermsofnumberofcharactersmaybethisisgood
 
 LOGSTASH_WRITER_ES_USERNAME=logstash_writer
 LOGSTASH_WRITER_ES_PASSWORD=PleaseChangeMe
