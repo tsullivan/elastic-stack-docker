@@ -11,34 +11,19 @@
 </head>
 <body id="poetry">
   <div class="page-wrapper">
-    <section class="intro" id="intro">
-      <header role="banner">
-        <h1>The Beauty of Poetry</h1>
-      </header>
-      <div class="summary" id="poetry-summary" role="article">
-        <p data-test-subj="is-what">This is some poetry.</p>
-      </div>
-      <div class="preamble" id="poetry-preamble" role="article">
-        <h2>Introduction</h2>
-        <p>Take the time for the loved ones in your life.</p>
-        <p>Write a poem for everyone.</p>
-      </div>
-    </section>
-    <div class="main supporting" id="poetry-supporting" role="main">
-      <h2>Poem Time</h2>
-      <div class="explanation" id="poetry-explanation" role="article">
-        <p>
-          There once was was a dude named Lukas<br/>
-          Who fished at the zoo for some zoo-fish<br/>
-          He worked on his abs<br/>
-          and caught some mud crabs<br/>
-          that were delicious when paired with a brew-ish
-        </p>
-      </div>
-      <footer>
-        Done.
-      </footer>
-    </div>
+    <div id="clockTime"></div>
   </div>
+  <script type="text/javascript">
+    (() => {
+      const container = document.getElementById('clockTime');
+      const faces = [ '🕙','🕗','🕑','🕗','🕓','🕞','🕛','🕑','🕣','🕔','🕟','🕝','🕔','🕡','🕤','🕕','🕠','🕗','🕛','🕛','🕦','🕓','🕢','🕝','🕠','🕡','🕟','🕖','🕚','🕞','🕗','🕧','🕦','🕞','🕓','🕚','🕚','🕗','🕘','🕧','🕢' ];
+      let f = 0;
+      window.setInterval(() => {
+        const pos = f % faces.length;
+        container.innerText = faces[pos];
+        f++;
+      }, 35);
+    })();
+  </script>
 </body>
 </html>
