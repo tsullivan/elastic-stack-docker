@@ -99,7 +99,7 @@ services:
       - "./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
-  apm-server:
+  apmserver:
     container_name: "esd_apm-server-6.5.1"
     image: "docker.elastic.co/apm/apm-server:6.5.1"
     cpu_count: 1
