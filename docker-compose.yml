@@ -114,23 +114,6 @@ services:
       - "./apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro"
     ports: ["8200:8200"]
 
-  logstash:
-    container_name: "esd_logstash-6.5.1"
-    image: "docker.elastic.co/logstash/logstash:6.5.1"
-    cpu_count: 1
-    cpu_period: 50000
-    cpu_quota: 45000
-    env_file: [".env"]
-    environment:
-      - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
-      - "ELASTICSEARCH_SSL_CERTIFICATE=$LOGSTASH_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
-      - "XPACK_MONITORING_ENABLED=true"
-      - "XPACK_MONITORING_ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
-    volumes:
-      - "./cert-bundle:$LOGSTASH_CERTS_DIR"
-      - "./logstash/pipeline:/usr/share/logstash/pipeline:ro"
-      - "./logstash/avocado-tweets-wildcard.json:/usr/share/logstash/avocado-tweets-wildcard.json:ro"
-
   curator:
     container_name: "esd_curator-5.5"
     image: "tsullivan/curator-5.5"
