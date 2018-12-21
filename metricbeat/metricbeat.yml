@@ -18,6 +18,11 @@ metricbeat.modules:
 
 setup.template.fields: "config/fields.yml"
 
+setup.kibana:
+  host: "kibana:5601"
+  username: "kibana"
+  password: "changeme"
+
 output.elasticsearch:
   hosts: "${ELASTICSEARCH_URL}"
   username: "${BEATS_WRITER_ES_USERNAME}"

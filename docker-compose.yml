@@ -93,6 +93,8 @@ services:
       - "DOCKER_HOST=unix:///var/run/docker.sock"
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_HOSTS"
       - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$METRICBEAT_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
+      - "METRICBEAT_KBN_SETUP_USERNAME=$METRICBEAT_KBN_SETUP_USERNAME"
+      - "METRICBEAT_KBN_SETUP_PASSWORD=$METRICBEAT_KBN_SETUP_PASSWORD"
     volumes:
       - "./cert-bundle:$METRICBEAT_CERTS_DIR"
       - "./metricbeat/config:/usr/share/metricbeat/config:ro"
