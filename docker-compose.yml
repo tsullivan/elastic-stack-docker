@@ -40,7 +40,6 @@ services:
     environment:
       - "cluster.name=esd"
       - "bootstrap.memory_lock=true"
-      - "xpack.license.self_generated.type=trial"
       - "xpack.watcher.enabled=false"
       - "xpack.monitoring.enabled=false"
       - "xpack.security.enabled=true"
@@ -137,6 +136,7 @@ services:
     cpu_quota: 45000
     env_file: [".env"]
     environment:
+      - "APM_TOKEN=foo"
       - "SLACK_BOT_NAME=beepbeepbeep"
       - "SLACK_BOT_TOKEN=$BOT_SLACK_BOT_TOKEN"
       - "ELASTIC_APM_TOKEN=$BOT_ELASTIC_APM_TOKEN"
