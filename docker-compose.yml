@@ -27,8 +27,8 @@ services:
     ports: ["443:8080"]
 
   elasticsearch:
-    container_name: "esd_elasticsearch-internal-6.5.4"
-    image: "docker.elastic.co/elasticsearch/elasticsearch:6.5.4"
+    container_name: "esd_elasticsearch-internal-6.6.1"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:6.6.1"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 40000
@@ -53,11 +53,11 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
       - "./cert-bundle:$ES_CERTS_DIR"
-      - "esdata-6.5:/usr/share/elasticsearch/data"
+      - "esdata-6.6:/usr/share/elasticsearch/data"
 
   kibana:
-    container_name: "esd_kibana-6.5.4"
-    image: "docker.elastic.co/kibana/kibana:6.5.4"
+    container_name: "esd_kibana-6.6.1"
+    image: "docker.elastic.co/kibana/kibana:6.6.1"
     cpu_period: 50000
     cpu_quota: 45000
     env_file: [".env"]
@@ -65,7 +65,7 @@ services:
       - "SERVER_BASEPATH=/kibana"
       - "SERVER_HOST=kibana"
       - "LOGGING_VERBOSE=true"
-      - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
+      - "ELASTICSEARCH_URL=$ELASTICSEARCH_HOSTS"
       - "ELASTICSEARCH_USERNAME=$KBN_ES_USERNAME"
       - "ELASTICSEARCH_PASSWORD=$KBN_ES_PASSWORD"
       - "ELASTICSEARCH_SSL_KEY=$KBN_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
@@ -82,8 +82,8 @@ services:
     volumes: ["./cert-bundle:$KBN_CERTS_DIR"]
 
   metricbeat:
-    container_name: "esd_metricbeat-6.5.4"
-    image: "docker.elastic.co/beats/metricbeat:6.5.4"
+    container_name: "esd_metricbeat-6.6.1"
+    image: "docker.elastic.co/beats/metricbeat:6.6.1"
     user: "root"
     cpu_count: 1
     cpu_period: 50000
@@ -91,6 +91,7 @@ services:
     env_file: [".env"]
     environment:
       - "DOCKER_HOST=unix:///var/run/docker.sock"
+      - "ELASTICSEARCH_URL=$ELASTICSEARCH_HOSTS"
       - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$METRICBEAT_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
     volumes:
       - "./cert-bundle:$METRICBEAT_CERTS_DIR"
@@ -99,14 +100,14 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   apm-server:
-    container_name: "esd_apm-server-6.5.4"
-    image: "docker.elastic.co/apm/apm-server:6.5.4"
+    container_name: "esd_apm-server-6.6.1"
+    image: "docker.elastic.co/apm/apm-server:6.6.1"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 35000
     env_file: [".env"]
     environment:
-      - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
+      - "ELASTICSEARCH_URL=$ELASTICSEARCH_HOSTS"
       - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$APM_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
     command: "apm-server -e -E apm-server.host=0.0.0.0:8200"
     volumes:
@@ -145,5 +146,5 @@ services:
       - "SESSION_SECRET=$SESSION_SECRET"
 
 volumes:
-  esdata-6.5:
+  esdata-6.6:
     driver: "local"
