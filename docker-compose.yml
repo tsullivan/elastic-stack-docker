@@ -28,7 +28,7 @@ services:
 
   elasticsearch:
     container_name: "esd_elasticsearch-internal-6.6.1"
-    image: "docker.elastic.co/elasticsearch/elasticsearch:6.6.1"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.0.0-beta1"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 40000
@@ -38,6 +38,7 @@ services:
         hard: -1
     env_file: [".env"]
     environment:
+      - "discovery.type=single-node"
       - "cluster.name=esd"
       - "bootstrap.memory_lock=true"
       - "xpack.watcher.enabled=false"
@@ -45,19 +46,19 @@ services:
       - "xpack.security.enabled=true"
       - "xpack.security.http.ssl.enabled=true"
       - "xpack.security.transport.ssl.enabled=true"
-      - "xpack.ssl.key=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
-      - "xpack.ssl.certificate=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
-      - "xpack.ssl.certificate_authorities=$ES_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
       - "xpack.security.transport.ssl.verification_mode=certificate"
+      - "xpack.security.http.ssl.key=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
+      - "xpack.security.http.ssl.certificate=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
+      - "xpack.security.http.ssl.certificate_authorities=$ES_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
       - "ELASTIC_PASSWORD=$ELASTIC_PASSWORD"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
       - "./cert-bundle:$ES_CERTS_DIR"
-      - "esdata-6.6:/usr/share/elasticsearch/data"
+      - "esdata-7.0:/usr/share/elasticsearch/data"
 
   kibana:
     container_name: "esd_kibana-6.6.1"
-    image: "docker.elastic.co/kibana/kibana:6.6.1"
+    image: "docker.elastic.co/kibana/kibana:7.0.0-beta1"
     cpu_period: 50000
     cpu_quota: 45000
     env_file: [".env"]
@@ -83,7 +84,7 @@ services:
 
   metricbeat:
     container_name: "esd_metricbeat-6.6.1"
-    image: "docker.elastic.co/beats/metricbeat:6.6.1"
+    image: "docker.elastic.co/beats/metricbeat:7.0.0-beta1"
     user: "root"
     cpu_count: 1
     cpu_period: 50000
@@ -101,7 +102,7 @@ services:
 
   apm-server:
     container_name: "esd_apm-server-6.6.1"
-    image: "docker.elastic.co/apm/apm-server:6.6.1"
+    image: "docker.elastic.co/apm/apm-server:7.0.0-beta1"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 35000
@@ -146,5 +147,5 @@ services:
       - "SESSION_SECRET=$SESSION_SECRET"
 
 volumes:
-  esdata-6.6:
+  esdata-7.0:
     driver: "local"
