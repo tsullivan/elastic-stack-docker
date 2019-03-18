@@ -20,8 +20,8 @@ setup.template.fields: "config/fields.yml"
 
 setup.kibana:
   host: "kibana:5601"
-  username: "kibana"
-  password: "changeme"
+  username: "${METRICBEAT_KBN_SETUP_USERNAME}"
+  password: "${METRICBEAT_KBN_SETUP_PASSWORD}"
 
 output.elasticsearch:
   hosts: "${ELASTICSEARCH_URL}"
