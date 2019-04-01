@@ -27,8 +27,8 @@ services:
     ports: ["443:8080"]
 
   elasticsearch:
-    container_name: "esd_elasticsearch-internal-6.6.2"
-    image: "docker.elastic.co/elasticsearch/elasticsearch:6.6.2"
+    container_name: "esd_elasticsearch-internal-6.5.4"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:6.5.4"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 40000
@@ -53,11 +53,11 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
       - "./cert-bundle:$ES_CERTS_DIR"
-      - "esdata-6.6:/usr/share/elasticsearch/data"
+      - "esdata-6.5:/usr/share/elasticsearch/data"
 
   kibana:
-    container_name: "esd_kibana-6.6.2"
-    image: "docker.elastic.co/kibana/kibana:6.6.2"
+    container_name: "esd_kibana-6.5.4"
+    image: "docker.elastic.co/kibana/kibana:6.5.4"
     cpu_period: 50000
     cpu_quota: 45000
     env_file: [".env"]
@@ -82,8 +82,8 @@ services:
     volumes: ["./cert-bundle:$KBN_CERTS_DIR"]
 
   metricbeat:
-    container_name: "esd_metricbeat-6.6.2"
-    image: "docker.elastic.co/beats/metricbeat:6.6.0"
+    container_name: "esd_metricbeat-6.5.4"
+    image: "docker.elastic.co/beats/metricbeat:6.5.4"
     user: "root"
     cpu_count: 1
     cpu_period: 50000
@@ -99,8 +99,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   apm-server:
-    container_name: "esd_apm-server-6.6.0"
-    image: "docker.elastic.co/apm/apm-server:6.6.0"
+    container_name: "esd_apm-server-6.5.4"
+    image: "docker.elastic.co/apm/apm-server:6.5.4"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 35000
@@ -145,5 +145,5 @@ services:
       - "SESSION_SECRET=$SESSION_SECRET"
 
 volumes:
-  esdata-6.6:
+  esdata-6.5:
     driver: "local"
