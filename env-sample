@@ -1,5 +1,3 @@
-VIRTUAL_HOST=foo.local
-
 ELASTICSEARCH_URL=https://es-proxy:9200
 ELASTIC_PASSWORD=PleaseChangeMe
 
