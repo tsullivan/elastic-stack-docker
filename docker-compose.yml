@@ -40,15 +40,18 @@ services:
     environment:
       - "cluster.name=esd"
       - "bootstrap.memory_lock=true"
+      - "discovery.type=single-node"
       - "xpack.watcher.enabled=false"
       - "xpack.monitoring.enabled=false"
       - "xpack.security.enabled=true"
       - "xpack.security.http.ssl.enabled=true"
+      - "xpack.security.http.ssl.key=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
+      - "xpack.security.http.ssl.certificate=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
       - "xpack.security.transport.ssl.enabled=true"
-      - "xpack.ssl.key=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
-      - "xpack.ssl.certificate=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
-      - "xpack.ssl.certificate_authorities=$ES_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
       - "xpack.security.transport.ssl.verification_mode=certificate"
+      - "xpack.http.ssl.key=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
+      - "xpack.http.ssl.certificate=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
+      - "xpack.http.ssl.certificate_authorities=$ES_CERTS_DIR/ca/ca.crt"
       - "ELASTIC_PASSWORD=$ELASTIC_PASSWORD"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
@@ -70,7 +73,7 @@ services:
       - "ELASTICSEARCH_PASSWORD=$KBN_ES_PASSWORD"
       - "ELASTICSEARCH_SSL_KEY=$KBN_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
       - "ELASTICSEARCH_SSL_CERTIFICATE=$KBN_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$KBN_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
+      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$KBN_CERTS_DIR/ca/ca.crt"
       - "ELASTICSEARCH_SSL_VERIFICATIONMODE=certificate"
       - "XPACK_REPORTING_CAPTURE_BROWSER_TYPE=chromium"
       - "XPACK_REPORTING_QUEUE_POLLINTERVAL=30000"
@@ -93,7 +96,7 @@ services:
     environment:
       - "DOCKER_HOST=unix:///var/run/docker.sock"
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_HOSTS"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$METRICBEAT_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
+      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$METRICBEAT_CERTS_DIR/ca/ca.crt"
       - "METRICBEAT_KBN_SETUP_USERNAME=$METRICBEAT_KBN_SETUP_USERNAME"
       - "METRICBEAT_KBN_SETUP_PASSWORD=$METRICBEAT_KBN_SETUP_PASSWORD"
     volumes:
@@ -111,7 +114,7 @@ services:
     env_file: [".env"]
     environment:
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_HOSTS"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$APM_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
+      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$APM_CERTS_DIR/ca/ca.crt"
     command: "apm-server -e -E apm-server.host=0.0.0.0:8200"
     volumes:
       - "./cert-bundle:$APM_CERTS_DIR"
