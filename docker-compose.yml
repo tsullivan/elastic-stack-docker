@@ -27,8 +27,8 @@ services:
     ports: ["443:8080"]
 
   elasticsearch:
-    container_name: "esd_elasticsearch-internal-7.2.0"
-    image: "docker.elastic.co/elasticsearch/elasticsearch:7.2.0"
+    container_name: "esd_elasticsearch-internal-7.3.1"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.3.1"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 40000
@@ -41,7 +41,7 @@ services:
       - "cluster.name=esd"
       - "bootstrap.memory_lock=true"
       - "discovery.type=single-node"
-      - "xpack.watcher.enabled=false"
+      - "xpack.watcher.enabled=true"
       - "xpack.security.enabled=true"
       - "xpack.security.http.ssl.certificate=$ES_CERTS_DIR/virtual-spice/virtual-spice.crt"
       - "xpack.security.http.ssl.enabled=true"
@@ -52,11 +52,12 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
       - "./cert-bundle:$ES_CERTS_DIR"
-      - "esdata-7.2:/usr/share/elasticsearch/data"
+      - "./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
+      - "esdata-7.3:/usr/share/elasticsearch/data"
 
   kibana:
-    container_name: "esd_kibana-7.2.0"
-    image: "docker.elastic.co/kibana/kibana:7.2.0"
+    container_name: "esd_kibana-7.3.1"
+    image: "docker.elastic.co/kibana/kibana:7.3.1"
     cpu_period: 50000
     cpu_quota: 45000
     env_file: [".env"]
@@ -82,8 +83,8 @@ services:
     volumes: ["./cert-bundle:$KBN_CERTS_DIR"]
 
   metricbeat:
-    container_name: "esd_metricbeat-7.2.0"
-    image: "docker.elastic.co/beats/metricbeat:7.2.0"
+    container_name: "esd_metricbeat-7.3.1"
+    image: "docker.elastic.co/beats/metricbeat:7.3.1"
     user: "root"
     cpu_count: 1
     cpu_period: 50000
@@ -101,50 +102,6 @@ services:
       - "./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
-  apm-server:
-    container_name: "esd_apm-server-7.2.0"
-    image: "docker.elastic.co/apm/apm-server:7.2.0"
-    cpu_count: 1
-    cpu_period: 50000
-    cpu_quota: 35000
-    env_file: [".env"]
-    environment:
-      - "ELASTICSEARCH_URL=$ELASTICSEARCH_HOSTS"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$APM_CERTS_DIR/ca/virtual-spice-ca.crt"
-    command: "apm-server -e -E apm-server.host=0.0.0.0:8200"
-    volumes:
-      - "./cert-bundle:$APM_CERTS_DIR"
-      - "./apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro"
-    ports: ["8200:8200"]
-
-  curator:
-    container_name: "esd_curator-5.5"
-    image: "tsullivan/curator-5.5"
-    build: "./curator"
-    env_file: [".env"]
-    environment:
-      - "ELASTICSEARCH_HOST=$CURATOR_CLIENT_HOST"
-      - "CLIENT_HOST=$CURATOR_CLIENT_HOST"
-      - "CLIENT_PORT=9200"
-      - "MAX_INDEX_AGE=3"
-    volumes:
-      - "./cert-bundle:$CURATOR_CERTS_DIR"
-      - "./curator/delete-indices.yml:/usr/share/curator/delete-indices.yml:ro"
-      - "./curator/curator.yml:/usr/share/curator/curator.yml"
-
-  chatbot:
-    container_name: "esd_my-chatbot"
-    image: "tsullivan/chatbot"
-    build: "$HOME/code/chatbot"
-    cpu_period: 50000
-    cpu_quota: 45000
-    env_file: [".env"]
-    environment:
-      - "SLACK_BOT_TOKEN=$BOT_SLACK_BOT_TOKEN"
-      - "APM_TOKEN=$BOT_ELASTIC_APM_TOKEN"
-      - "APM_URL=$BOT_ELASTIC_APM_SERVER_URL"
-      - "SESSION_SECRET=$SESSION_SECRET"
-
 volumes:
-  esdata-7.2:
+  esdata-7.3:
     driver: "local"

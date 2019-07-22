@@ -1,4 +1,4 @@
-ELASTICSEARCH_URL=https://es-proxy:9200
+ELASTICSEARCH_URL=http://es-proxy:9200
 ELASTIC_PASSWORD=PleaseChangeMe
 
 ES_CERTS_DIR=/usr/share/elasticsearch/config/certificates
