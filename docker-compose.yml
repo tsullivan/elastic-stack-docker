@@ -103,6 +103,35 @@ services:
       - "./metricbeat/config/fields.yml:/usr/share/metricbeat/config/fields.yml:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
+  apm-server:
+    container_name: "esd_apm-server-6.3.2"
+    image: "docker.elastic.co/apm/apm-server:6.3.2"
+    cpu_count: 1
+    cpu_period: 50000
+    cpu_quota: 35000
+    env_file: [".env"]
+    environment:
+      - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
+      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$APM_CERTS_DIR/ca/$VIRTUAL_HOST-ca.crt"
+    command: "apm-server -e -E apm-server.host=0.0.0.0:8200"
+    volumes:
+      - "./cert-bundle:$APM_CERTS_DIR"
+      - "./apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro"
+
+  chatbot:
+    container_name: "esd_my-chatbot"
+    image: "tsullivan/chatbot"
+    build: "$HOME/code/chatbot"
+    cpu_period: 50000
+    cpu_quota: 45000
+    env_file: [".env"]
+    environment:
+      - "SLACK_BOT_NAME=beepbeepbeep"
+      - "SLACK_BOT_TOKEN=$BOT_SLACK_BOT_TOKEN"
+      - "APM_TOKEN=$BOT_ELASTIC_APM_TOKEN"
+      - "APM_URL=$BOT_ELASTIC_APM_SERVER_URL"
+      - "SESSION_SECRET=$SESSION_SECRET"
+
 volumes:
   esdata-7-4:
     driver: "local"
