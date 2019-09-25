@@ -1,0 +1,6 @@
+# Default Kibana configuration for docker target
+server.name: kibana
+server.host: "0"
+elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+
+#server.customResponseHeaders: { "X-XSS-Protection": "1; mode=block", "Access-Control-Allow-Origin": "https://example.com", "Content-Security-Policy": "default-src 'self' *.trusted.com", "X-Frame-Options": "deny" }
