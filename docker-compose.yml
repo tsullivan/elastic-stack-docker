@@ -28,8 +28,8 @@ services:
     ports: ["443:8080"]
 
   elasticsearch:
-    container_name: "esd_elasticsearch-internal-7.4.0"
-    image: "docker.elastic.co/elasticsearch/elasticsearch:7.4.0"
+    container_name: "esd_elasticsearch-internal-7.4.1"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.4.1"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 40000
@@ -56,8 +56,8 @@ services:
       - "esdata-7-4:/usr/share/elasticsearch/data"
 
   kibana:
-    container_name: "esd_kibana-7.4.0"
-    image: "docker.elastic.co/kibana/kibana:7.4.0"
+    container_name: "esd_kibana-7.4.1"
+    image: "docker.elastic.co/kibana/kibana:7.4.1"
     cpu_period: 50000
     cpu_quota: 45000
     env_file: [".env"]
@@ -84,8 +84,8 @@ services:
       - "./cert-bundle:$KBN_CERTS_DIR"
 
   metricbeat:
-    container_name: "esd_metricbeat-7.4.0"
-    image: "docker.elastic.co/beats/metricbeat:7.4.0"
+    container_name: "esd_metricbeat-7.4.1"
+    image: "docker.elastic.co/beats/metricbeat:7.4.1"
     user: "root"
     cpu_count: 1
     cpu_period: 50000
@@ -104,8 +104,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   apm-server:
-    container_name: "esd_apm-server-7.4.0"
-    image: "docker.elastic.co/apm/apm-server:7.4.0"
+    container_name: "esd_apm-server-7.4.1"
+    image: "docker.elastic.co/apm/apm-server:7.4.1"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 35000
