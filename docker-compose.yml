@@ -117,19 +117,19 @@ services:
       - "./cert-bundle:$APM_CERTS_DIR"
       - "./apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro"
 
-  chatbot:
-    container_name: "esd_my-chatbot"
-    image: "tsullivan/chatbot"
-    build: "$HOME/code/chatbot"
-    cpu_period: 50000
-    cpu_quota: 45000
-    env_file: [".env"]
-    environment:
-      - "SLACK_BOT_NAME=beepbeepbeep"
-      - "SLACK_BOT_TOKEN=$BOT_SLACK_BOT_TOKEN"
-      - "APM_TOKEN=$BOT_ELASTIC_APM_TOKEN"
-      - "APM_URL=$BOT_ELASTIC_APM_SERVER_URL"
-      - "SESSION_SECRET=$SESSION_SECRET"
+    # chatbot:
+    #   container_name: "esd_my-chatbot"
+    #   image: "tsullivan/chatbot"
+    #   build: "$HOME/code/chatbot"
+    #   cpu_period: 50000
+    #   cpu_quota: 45000
+    #   env_file: [".env"]
+    #   environment:
+    #     - "SLACK_BOT_NAME=beepbeepbeep"
+    #     - "SLACK_BOT_TOKEN=$BOT_SLACK_BOT_TOKEN"
+    #     - "APM_TOKEN=$BOT_ELASTIC_APM_TOKEN"
+    #     - "APM_URL=$BOT_ELASTIC_APM_SERVER_URL"
+    #     - "SESSION_SECRET=$SESSION_SECRET"
 
 volumes:
   esdata-7.6:
