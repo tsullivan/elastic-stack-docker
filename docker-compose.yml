@@ -62,9 +62,6 @@ services:
     cpu_quota: 45000
     env_file: [".env"]
     environment:
-      - "SERVER_BASEPATH=/kibana"
-      - "SERVER_HOST=kibana"
-      - "LOGGING_VERBOSE=true"
       - "ELASTICSEARCH_URL=$ELASTICSEARCH_HOSTS"
       - "ELASTICSEARCH_USERNAME=$KBN_ES_USERNAME"
       - "ELASTICSEARCH_PASSWORD=$KBN_ES_PASSWORD"

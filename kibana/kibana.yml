@@ -1,1 +1,4 @@
 server.host: "0"
+server.basePath: "/kibana"
+server.rewriteBasePath: true
+logging.verbose: true
