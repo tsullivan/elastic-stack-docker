@@ -28,8 +28,8 @@ services:
     ports: ["443:8080"]
 
   elasticsearch:
-    container_name: "esd_elasticsearch-internal-7.6.2"
-    image: "docker.elastic.co/elasticsearch/elasticsearch:7.6.2"
+    container_name: "esd_elasticsearch-internal-7.9.0"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.9.0"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 40000
@@ -53,11 +53,11 @@ services:
     volumes:
       - "./cert-bundle:$ES_CERTS_DIR"
       - "./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
-      - "esdata-7.6:/usr/share/elasticsearch/data"
+      - "esdata-7.9:/usr/share/elasticsearch/data"
 
   kibana:
-    container_name: "esd_kibana-7.6.2"
-    image: "docker.elastic.co/kibana/kibana:7.6.2"
+    container_name: "esd_kibana-7.9.0"
+    image: "docker.elastic.co/kibana/kibana:7.9.0"
     cpu_period: 50000
     cpu_quota: 45000
     env_file: [".env"]
@@ -80,8 +80,8 @@ services:
       - "./cert-bundle:$KBN_CERTS_DIR"
 
   metricbeat:
-    container_name: "esd_metricbeat-7.6.2"
-    image: "docker.elastic.co/beats/metricbeat:7.6.2"
+    container_name: "esd_metricbeat-7.9.0"
+    image: "docker.elastic.co/beats/metricbeat:7.9.0"
     user: "root"
     cpu_count: 1
     cpu_period: 50000
@@ -95,13 +95,13 @@ services:
       - "METRICBEAT_KBN_SETUP_PASSWORD=$METRICBEAT_KBN_SETUP_PASSWORD"
     volumes:
       - "./cert-bundle:$METRICBEAT_CERTS_DIR"
-      - "./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro"
+        # - "./metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro"
       - "./metricbeat/config:/usr/share/metricbeat/config:ro"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   apm-server:
-    container_name: "esd_apm-server-7.6.2"
-    image: "docker.elastic.co/apm/apm-server:7.6.2"
+    container_name: "esd_apm-server-7.9.0"
+    image: "docker.elastic.co/apm/apm-server:7.9.0"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 35000
@@ -129,5 +129,5 @@ services:
     #     - "SESSION_SECRET=$SESSION_SECRET"
 
 volumes:
-  esdata-7.6:
+  esdata-7.9:
     driver: "local"
