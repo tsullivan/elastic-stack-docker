@@ -1,6 +1,5 @@
 version: "2.2"
 
-
 services:
   es-proxy:
     container_name: "esd_nginx_elasticsearch-proxy"
@@ -11,7 +10,7 @@ services:
     env_file: [".env"]
     volumes:
       - "./cert-bundle:$NGINX_CERTS_DIR"
-      - "./nginx/es-proxy.conf:/etc/nginx/conf.d/es-proxy.conf:ro"
+      - "./nginx/es-proxy.conf:/etc/nginx/conf.d/es-proxy.conf"
     ports: ["19200:9200"]
 
   web:
@@ -23,8 +22,8 @@ services:
     env_file: [".env"]
     volumes:
       - "./cert-bundle:$NGINX_CERTS_DIR"
-      - "./nginx/web.conf:/etc/nginx/conf.d/web.conf:ro"
-      - "./nginx/html:/etc/nginx/html:ro"
+      - "./nginx/web.conf:/etc/nginx/conf.d/web.conf"
+      - "./nginx/html:/etc/nginx/html"
     ports: ["443:8080"]
 
   elasticsearch:
@@ -80,6 +79,25 @@ services:
       - "./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml"
       - "./cert-bundle:$KBN_CERTS_DIR"
 
+  metricbeat:
+    container_name: "esd_metricbeat"
+    build: "metricbeat"
+    user: "root"
+    cpu_count: 1
+    cpu_period: 50000
+    cpu_quota: 35000
+    env_file: [".env"]
+    environment:
+      - "DOCKER_HOST=unix:///var/run/docker.sock"
+      - "ELASTICSEARCH_URL=$ELASTICSEARCH_HOSTS"
+      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$METRICBEAT_CERTS_DIR/ca/ca.crt"
+      - "METRICBEAT_KBN_SETUP_USERNAME=$METRICBEAT_KBN_SETUP_USERNAME"
+      - "METRICBEAT_KBN_SETUP_PASSWORD=$METRICBEAT_KBN_SETUP_PASSWORD"
+    volumes:
+      - "./cert-bundle:$METRICBEAT_CERTS_DIR"
+      - "./metricbeat/config:/usr/share/metricbeat/config"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
   apm-server:
     container_name: "esd_apm-server-7.10.1"
     image: "docker.elastic.co/apm/apm-server:7.10.1"
@@ -93,7 +111,7 @@ services:
     command: "apm-server -e -E apm-server.host=0.0.0.0:8200"
     volumes:
       - "./cert-bundle:$APM_CERTS_DIR"
-      - "./apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml:ro"
+      - "./apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml"
 
     # chatbot:
     #   container_name: "esd_my-chatbot"

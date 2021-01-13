@@ -19,7 +19,7 @@ metricbeat.modules:
 setup.template.fields: "config/fields.yml"
 
 setup.kibana:
-  host: "kibana:5601"
+  host: "http://kibana:5601/kibana"
   username: "${METRICBEAT_KBN_SETUP_USERNAME}"
   password: "${METRICBEAT_KBN_SETUP_PASSWORD}"
 
@@ -27,7 +27,7 @@ output.elasticsearch:
   hosts: "${ELASTICSEARCH_URL}"
   username: "${BEATS_WRITER_ES_USERNAME}"
   password: "${BEATS_WRITER_ES_PASSWORD}"
-  ssl.certificate_authorities: ["${ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES}"]
+  ssl.certificate_authorities: ["${METRICBEAT_CERTS_DIR}/ca/ca.crt"]
 
 xpack.monitoring:
   enabled: true
