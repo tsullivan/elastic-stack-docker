@@ -34,3 +34,4 @@ xpack.monitoring:
   elasticsearch:
     username: "${BEATS_SYSTEM_ES_USERNAME}"
     password: "${BEATS_SYSTEM_ES_PASSWORD}"
+    ssl.certificate_authorities: ["${METRICBEAT_CERTS_DIR}/ca/ca.crt"]
