@@ -81,7 +81,9 @@ services:
 
   metricbeat:
     container_name: "esd_metricbeat"
-    build: "metricbeat"
+    build: 
+      context: "metricbeat"
+    image: "esd_metricbeat-custom:7.10.1"
     user: "root"
     cpu_count: 1
     cpu_period: 50000
