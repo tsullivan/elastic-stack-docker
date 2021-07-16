@@ -43,14 +43,14 @@ services:
       - "discovery.type=single-node"
       - "xpack.security.enabled=true"
       - "xpack.security.http.ssl.enabled=true"
-      - "xpack.security.http.ssl.certificate=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
-      - "xpack.security.http.ssl.key=$ES_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
+      - "xpack.security.http.ssl.certificate=$ELASTICSEARCH_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
+      - "xpack.security.http.ssl.key=$ELASTICSEARCH_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
       - "xpack.security.transport.ssl.enabled=true"
       - "xpack.security.transport.ssl.verification_mode=certificate"
       - "ELASTIC_PASSWORD=$ELASTIC_PASSWORD"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
-      - "./cert-bundle:$ES_CERTS_DIR"
+      - "./cert-bundle:$ELASTICSEARCH_CERTS_DIR"
       - "./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
       - "esdata-7.13:/usr/share/elasticsearch/data"
 
