@@ -2,7 +2,6 @@ version: "2.2"
 
 services:
   es-proxy:
-    container_name: "esd_nginx_elasticsearch-proxy"
     image: "nginx:latest"
     cpu_count: 1
     cpu_period: 50000
@@ -14,7 +13,6 @@ services:
     ports: ["19200:9200"]
 
   web:
-    container_name: "esd_nginx_web_kibana-proxy"
     image: "nginx:latest"
     cpu_count: 1
     cpu_period: 50000
@@ -27,8 +25,7 @@ services:
     ports: ["443:8080"]
 
   elasticsearch:
-    container_name: "esd_elasticsearch-internal-7.13.3"
-    image: "docker.elastic.co/elasticsearch/elasticsearch:7.13.3"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.14.1"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 40000
@@ -52,11 +49,10 @@ services:
     volumes:
       - "./cert-bundle:$ELASTICSEARCH_CERTS_DIR"
       - "./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
-      - "esdata-7.13:/usr/share/elasticsearch/data"
+      - "esdata-7.14:/usr/share/elasticsearch/data"
 
   kibana:
-    container_name: "esd_kibana-7.13.3"
-    image: "docker.elastic.co/kibana/kibana:7.13.3"
+    image: "docker.elastic.co/kibana/kibana:7.14.1"
     cpu_period: 50000
     cpu_quota: 45000
     env_file: [".env"]
@@ -81,10 +77,9 @@ services:
       - "./cert-bundle:$KBN_CERTS_DIR"
 
   metricbeat:
-    container_name: "esd_metricbeat"
     build: 
       context: "metricbeat"
-    image: "esd_metricbeat-custom:7.13.3"
+    image: "esd_metricbeat-custom:7.14.1"
     user: "root"
     cpu_count: 1
     cpu_period: 50000
@@ -102,8 +97,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   apm-server:
-    container_name: "esd_apm-server-7.13.3"
-    image: "docker.elastic.co/apm/apm-server:7.13.3"
+    image: "docker.elastic.co/apm/apm-server:7.14.1"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 35000
@@ -116,20 +110,6 @@ services:
       - "./cert-bundle:$APM_CERTS_DIR"
       - "./apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml"
 
-    # chatbot:
-    #   container_name: "esd_my-chatbot"
-    #   image: "tsullivan/chatbot"
-    #   build: "$HOME/code/chatbot"
-    #   cpu_period: 50000
-    #   cpu_quota: 45000
-    #   env_file: [".env"]
-    #   environment:
-    #     - "SLACK_BOT_NAME=beepbeepbeep"
-    #     - "SLACK_BOT_TOKEN=$BOT_SLACK_BOT_TOKEN"
-    #     - "APM_TOKEN=$BOT_ELASTIC_APM_TOKEN"
-    #     - "APM_URL=$BOT_ELASTIC_APM_SERVER_URL"
-    #     - "SESSION_SECRET=$SESSION_SECRET"
-
 volumes:
-  esdata-7.13:
+  esdata-7.14:
     driver: "local"
