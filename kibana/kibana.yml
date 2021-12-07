@@ -1,3 +1,14 @@
-server.host: "0"
-server.basePath: "/kibana"
-server.rewriteBasePath: true
+server:
+  host: 0.0.0.0
+  basePath: "/kibana"
+  rewriteBasePath: true
+
+xpack.reporting:
+  encryptionKey: MjAxOC0wOS0yMFQxODo0ODowNlogMjAxODA5MjBfMTg0OCAxNTM3NDY5Mjg2NzQx
+  roles.enabled: false
+  csv.maxSizeBytes: 500000000
+  capture.maxAttempts: 1
+  capture.timeouts:
+    renderComplete: 1m
+    waitForElements: 1m
+
