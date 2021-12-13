@@ -50,10 +50,10 @@ services:
     volumes:
       - "./cert-bundle:$ELASTICSEARCH_CERTS_DIR"
       - "./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
-      - "esdata-7.15:/usr/share/elasticsearch/data"
+      - "esdata-7.16:/usr/share/elasticsearch/data"
 
   kibana:
-    image: "docker.elastic.co/kibana/kibana:7.15.2"
+    image: "docker.elastic.co/kibana/kibana:7.16.0"
     cpu_period: 50000
     cpu_quota: 45000
     env_file: [".env"]
@@ -80,7 +80,7 @@ services:
   metricbeat:
     build: 
       context: "metricbeat"
-    image: "esd_metricbeat-custom:7.15.2"
+    image: "esd_metricbeat-custom:7.16.0"
     user: "root"
     cpu_count: 1
     cpu_period: 50000
@@ -98,7 +98,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   apm-server:
-    image: "docker.elastic.co/apm/apm-server:7.15.2"
+    image: "docker.elastic.co/apm/apm-server:7.16.0"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 35000
@@ -122,5 +122,5 @@ services:
       - "SESSION_SECRET=$SESSION_SECRET"
 
 volumes:
-  esdata-7.15:
+  esdata-7.16:
     driver: "local"

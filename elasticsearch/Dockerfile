@@ -1,3 +1,3 @@
-FROM docker.elastic.co/elasticsearch/elasticsearch:7.15.2
+FROM docker.elastic.co/elasticsearch/elasticsearch:7.16.0
 
 RUN /usr/share/elasticsearch/bin/elasticsearch-plugin install --batch repository-gcs
