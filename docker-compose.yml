@@ -81,7 +81,7 @@ services:
   metricbeat:
     build: 
       context: "metricbeat"
-    image: "esd_metricbeat-custom:7.16.1"
+    image: "esd_metricbeat-custom:7.16.2"
     user: "root"
     cpu_count: 1
     cpu_period: 50000
@@ -99,7 +99,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
 
   apm-server:
-    image: "docker.elastic.co/apm/apm-server:7.16.1"
+    image: "docker.elastic.co/apm/apm-server:7.16.2"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 35000
