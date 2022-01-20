@@ -44,6 +44,8 @@ services:
       - "xpack.security.http.ssl.certificate=$ELASTICSEARCH_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
       - "xpack.security.http.ssl.key=$ELASTICSEARCH_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
       - "xpack.security.transport.ssl.enabled=true"
+      - "xpack.security.transport.ssl.certificate=$ELASTICSEARCH_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
+      - "xpack.security.transport.ssl.key=$ELASTICSEARCH_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
       - "xpack.security.transport.ssl.verification_mode=certificate"
       - "ELASTIC_PASSWORD=$ELASTIC_PASSWORD"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"

@@ -7,8 +7,17 @@ xpack.reporting:
   encryptionKey: MjAxOC0wOS0yMFQxODo0ODowNlogMjAxODA5MjBfMTg0OCAxNTM3NDY5Mjg2NzQx
   roles.enabled: false
   csv.maxSizeBytes: 500000000
+  capture.loadDelay: 15s
   capture.maxAttempts: 1
   capture.timeouts:
     renderComplete: 1m
     waitForElements: 1m
 
+logging:
+ loggers:
+   #  - name: plugins.screenshotting
+   #    appenders: [console]
+   #    level: debug
+   - name: plugins.reporting
+     appenders: [console]
+     level: debug
