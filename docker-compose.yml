@@ -100,20 +100,6 @@ services:
       - "./metricbeat/config:/usr/share/metricbeat/config"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
-  apm-server:
-    image: "docker.elastic.co/apm/apm-server:7.16.3"
-    cpu_count: 1
-    cpu_period: 50000
-    cpu_quota: 35000
-    env_file: [".env"]
-    environment:
-      - "ELASTICSEARCH_URL=$ELASTICSEARCH_URL"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$APM_CERTS_DIR/ca/ca.crt"
-    command: "apm-server -e -E apm-server.host=0.0.0.0:8200"
-    volumes:
-      - "./cert-bundle:$APM_CERTS_DIR"
-      - "./apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml"
-
   chatbot:
     container_name: "esd_my-chatbot"
     image: "tsullivan/chatbot"
