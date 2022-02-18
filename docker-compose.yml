@@ -25,8 +25,8 @@ services:
     ports: ["443:8080"]
 
   elasticsearch:
-    build:
-      context: "elasticsearch"
+    container_name: "esd_elasticsearch-internal-7.17.0"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.17.0"
     cpu_count: 1
     cpu_period: 50000
     cpu_quota: 40000
@@ -52,11 +52,11 @@ services:
     volumes:
       - "./cert-bundle:$ELASTICSEARCH_CERTS_DIR"
       - "./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
-      - "esdata-7.16:/usr/share/elasticsearch/data"
+      - "esdata-7.17:/usr/share/elasticsearch/data"
 
   kibana:
-    build: 
-      context: "kibana"
+    container_name: "esd_kibana-7.17.0"
+    image: "docker.elastic.co/kibana/kibana:7.17.0"
     cpu_period: 50000
     cpu_quota: 45000
     env_file: [".env"]
@@ -80,26 +80,6 @@ services:
       - "./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml"
       - "./cert-bundle:$KBN_CERTS_DIR"
 
-  metricbeat:
-    build: 
-      context: "metricbeat"
-    image: "esd_metricbeat-custom:7.16.3"
-    user: "root"
-    cpu_count: 1
-    cpu_period: 50000
-    cpu_quota: 35000
-    env_file: [".env"]
-    environment:
-      - "DOCKER_HOST=unix:///var/run/docker.sock"
-      - "ELASTICSEARCH_URL=$ELASTICSEARCH_HOSTS"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$METRICBEAT_CERTS_DIR/ca/ca.crt"
-      - "METRICBEAT_KBN_SETUP_USERNAME=$METRICBEAT_KBN_SETUP_USERNAME"
-      - "METRICBEAT_KBN_SETUP_PASSWORD=$METRICBEAT_KBN_SETUP_PASSWORD"
-    volumes:
-      - "./cert-bundle:$METRICBEAT_CERTS_DIR"
-      - "./metricbeat/config:/usr/share/metricbeat/config"
-      - "/var/run/docker.sock:/var/run/docker.sock"
-
   chatbot:
     container_name: "esd_my-chatbot"
     image: "tsullivan/chatbot"
@@ -111,5 +91,5 @@ services:
       - "SESSION_SECRET=$SESSION_SECRET"
 
 volumes:
-  esdata-7.16:
+  esdata-7.17:
     driver: "local"
