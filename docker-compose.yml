@@ -76,6 +76,7 @@ services:
       - "XPACK_REPORTING_ENCRYPTIONKEY=$SESSION_SECRET"
       - "XPACK_SECURITY_ENCRYPTIONKEY=$SESSION_SECRET"
       - "XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=$SESSION_SECRET"
+      - "XPACK_REPORTING_CAPTURE_BROWSER_CHROMIUM_DISABLESANDBOX=true"
     volumes:
       - "./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml"
       - "./cert-bundle:$KBN_CERTS_DIR"
