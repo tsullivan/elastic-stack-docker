@@ -52,7 +52,7 @@ services:
     volumes:
       - "./cert-bundle:$ELASTICSEARCH_CERTS_DIR"
       - "./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
-      - "esdata-8.2:/usr/share/elasticsearch/data"
+      - "esdata-test8.3:/usr/share/elasticsearch/data"
 
   kibana:
     container_name: "esd_kibana-8.2.2"
@@ -92,5 +92,5 @@ services:
       - "SESSION_SECRET=$SESSION_SECRET"
 
 volumes:
-  esdata-8.2:
+  esdata-test8.3:
     driver: "local"
