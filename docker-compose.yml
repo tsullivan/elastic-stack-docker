@@ -1,32 +1,9 @@
 version: "2.2"
 
 services:
-  es-proxy:
-    image: "nginx:latest"
-    cpu_count: 1
-    cpu_period: 50000
-    cpu_quota: 48000
-    env_file: [".env"]
-    volumes:
-      - "./cert-bundle:$NGINX_CERTS_DIR"
-      - "./nginx/es-proxy.conf:/etc/nginx/conf.d/es-proxy.conf"
-    ports: ["19200:9200"]
-
-  web:
-    image: "nginx:latest"
-    cpu_count: 1
-    cpu_period: 50000
-    cpu_quota: 48000
-    env_file: [".env"]
-    volumes:
-      - "./cert-bundle:$NGINX_CERTS_DIR"
-      - "./nginx/web.conf:/etc/nginx/conf.d/web.conf"
-      - "./nginx/html:/etc/nginx/html"
-    ports: ["443:8080"]
-
   elasticsearch:
-    container_name: "esd_elasticsearch-internal-8.2.3"
-    image: "docker.elastic.co/elasticsearch/elasticsearch:8.2.3"
+    container_name: "esd_elasticsearch-8.3.3"
+    image: "docker.elastic.co/elasticsearch/elasticsearch:8.3.3"
     ulimits:
       memlock:
         soft: -1
@@ -38,54 +15,46 @@ services:
       - "discovery.type=single-node"
       - "xpack.security.enabled=true"
       - "xpack.security.http.ssl.enabled=true"
-      - "xpack.security.http.ssl.certificate=$ELASTICSEARCH_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
-      - "xpack.security.http.ssl.key=$ELASTICSEARCH_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
+      - "xpack.security.http.ssl.certificate=$ELASTICSEARCH_CERTS_DIR/localhost/localhost.crt"
+      - "xpack.security.http.ssl.key=$ELASTICSEARCH_CERTS_DIR/localhost/localhost.key"
       - "xpack.security.transport.ssl.enabled=true"
-      - "xpack.security.transport.ssl.certificate=$ELASTICSEARCH_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
-      - "xpack.security.transport.ssl.key=$ELASTICSEARCH_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
+      - "xpack.security.transport.ssl.certificate=$ELASTICSEARCH_CERTS_DIR/localhost/localhost.crt"
+      - "xpack.security.transport.ssl.key=$ELASTICSEARCH_CERTS_DIR/localhost/localhost.key"
       - "xpack.security.transport.ssl.verification_mode=certificate"
+      - "xpack.license.self_generated.type=trial"
       - "ELASTIC_PASSWORD=$ELASTIC_PASSWORD"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
       - "./cert-bundle:$ELASTICSEARCH_CERTS_DIR"
       - "./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
-      - "esdata-8.2:/usr/share/elasticsearch/data"
+      - "esdata-8.3:/usr/share/elasticsearch/data"
+    ports: ["19200:9200"]
 
   kibana:
-    container_name: "esd_kibana-8.2.3"
-    image: "docker.elastic.co/kibana/kibana:8.2.3"
+    container_name: "esd_kibana-8.3.3"
+    image: "docker.elastic.co/kibana/kibana:8.3.3"
     env_file: [".env"]
     environment:
-      - "ELASTICSEARCH_URL=$ELASTICSEARCH_HOSTS"
-      - "ELASTICSEARCH_USERNAME=$KBN_ES_USERNAME"
-      - "ELASTICSEARCH_PASSWORD=$KBN_ES_PASSWORD"
-      - "ELASTICSEARCH_SSL_KEY=$KBN_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.key"
-      - "ELASTICSEARCH_SSL_CERTIFICATE=$KBN_CERTS_DIR/$VIRTUAL_HOST/$VIRTUAL_HOST.crt"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$KBN_CERTS_DIR/ca/ca.crt"
+      - "ELASTICSEARCH_HOSTS=https://elasticsearch:9200"
+      - "ELASTICSEARCH_USERNAME=$KIBANA_ES_USERNAME"
+      - "ELASTICSEARCH_PASSWORD=$KIBANA_ES_PASSWORD"
+      - "ELASTICSEARCH_SSL_KEY=$KIBANA_CERTS_DIR/localhost/localhost.key"
+      - "ELASTICSEARCH_SSL_CERTIFICATE=$KIBANA_CERTS_DIR/localhost/localhost.crt"
+      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$KIBANA_CERTS_DIR/ca/ca.crt"
       - "ELASTICSEARCH_SSL_VERIFICATIONMODE=certificate"
-      - "SERVER_PUBLICBASEURL=https://paninix/kibana"
       - "XPACK_REPORTING_CAPTURE_BROWSER_TYPE=chromium"
       - "XPACK_REPORTING_KIBANASERVER_PORT=8080"
       - "XPACK_REPORTING_KIBANASERVER_PROTOCOL=https"
       - "XPACK_REPORTING_KIBANASERVER_HOSTNAME=web"
-      - "XPACK_REPORTING_ENCRYPTIONKEY=$SESSION_SECRET"
-      - "XPACK_SECURITY_ENCRYPTIONKEY=$SESSION_SECRET"
-      - "XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=$SESSION_SECRET"
+      - "XPACK_REPORTING_ENCRYPTIONKEY=$XPACK_REPORTING_ENCRYPTIONKEY"
+      - "XPACK_SECURITY_ENCRYPTIONKEY=$XPACK_SECURITY_ENCRYPTIONKEY"
+      - "XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=$XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY"
       - "XPACK_REPORTING_CAPTURE_BROWSER_CHROMIUM_DISABLESANDBOX=true"
     volumes:
       - "./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml"
-      - "./cert-bundle:$KBN_CERTS_DIR"
-
-  chatbot:
-    container_name: "esd_my-chatbot"
-    image: "tsullivan/chatbot"
-    build: "$HOME/code/chatbot"
-    cpu_period: 50000
-    cpu_quota: 45000
-    env_file: [".env"]
-    environment:
-      - "SESSION_SECRET=$SESSION_SECRET"
+      - "./cert-bundle:$KIBANA_CERTS_DIR"
+    ports: ["15601:5601"]
 
 volumes:
-  esdata-8.2:
+  esdata-8.3:
     driver: "local"
