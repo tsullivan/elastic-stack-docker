@@ -2,8 +2,7 @@ version: "2.2"
 
 services:
   setup:
-    # image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     volumes:
       - ./config/certs:$ELASTICSEARCH_CERTS_DIR
     user: "0"
@@ -21,7 +20,7 @@ services:
           bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
           unzip config/certs/ca.zip -d config/certs;
         fi;
-        if [ ! -f certs/certs.zip ]; then
+        if [ ! -f config/certs/certs.zip ]; then
           echo "Creating certs";
           echo -ne \
           "instances:\n"\
@@ -61,7 +60,7 @@ services:
     depends_on:
       setup:
         condition: service_healthy
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     ulimits:
       memlock:
         soft: -1
@@ -85,7 +84,7 @@ services:
     volumes:
       - ./config/certs:$ELASTICSEARCH_CERTS_DIR
       - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - esdata-8.3:/usr/share/elasticsearch/data
+      - esdata-local:/usr/share/elasticsearch/data
     ports: ["19200:9200"]
     healthcheck:
       test:
@@ -101,20 +100,17 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
-    image: docker.elastic.co/kibana/kibana:8.3.3
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
     env_file: [".env"]
     environment:
+      - SERVER_SSL_ENABLED=false
+      # - SERVER_SSL_CERTIFICATE=$KIBANA_CERTS_DIR/kibana/kibana.crt
+      # - SERVER_SSL_KEY=$KIBANA_CERTS_DIR/kibana/kibana.key
       - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
       - ELASTICSEARCH_USERNAME=$KIBANA_ES_USERNAME
       - ELASTICSEARCH_PASSWORD=$KIBANA_ES_PASSWORD
-      - ELASTICSEARCH_SSL_KEY=$KIBANA_CERTS_DIR/kibana/kibana.key
-      - ELASTICSEARCH_SSL_CERTIFICATE=$KIBANA_CERTS_DIR/kibana/kibana.crt
       - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$KIBANA_CERTS_DIR/ca/ca.crt
       - ELASTICSEARCH_SSL_VERIFICATIONMODE=certificate
-      - XPACK_REPORTING_CAPTURE_BROWSER_TYPE=chromium
-      - XPACK_REPORTING_KIBANASERVER_PORT=8080
-      - XPACK_REPORTING_KIBANASERVER_PROTOCOL=https
-      - XPACK_REPORTING_KIBANASERVER_HOSTNAME=web
       - XPACK_REPORTING_ENCRYPTIONKEY=$XPACK_REPORTING_ENCRYPTIONKEY
       - XPACK_SECURITY_ENCRYPTIONKEY=$XPACK_SECURITY_ENCRYPTIONKEY
       - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=$XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY
@@ -134,5 +130,5 @@ services:
       retries: 120
 
 volumes:
-  esdata-8.3:
+  esdata-local:
     driver: local
