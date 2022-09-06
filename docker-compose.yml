@@ -1,60 +1,138 @@
 version: "2.2"
 
 services:
+  setup:
+    # image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
+    volumes:
+      - ./config/certs:$ELASTICSEARCH_CERTS_DIR
+    user: "0"
+    command: >
+      bash -c '
+        if [ x${ELASTIC_PASSWORD} == x ]; then
+          echo "Set the ELASTIC_PASSWORD environment variable in the .env file";
+          exit 1;
+        elif [ x${KIBANA_PASSWORD} == x ]; then
+          echo "Set the KIBANA_PASSWORD environment variable in the .env file";
+          exit 1;
+        fi;
+        if [ ! -f config/certs/ca.zip ]; then
+          echo "Creating CA";
+          bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
+          unzip config/certs/ca.zip -d config/certs;
+        fi;
+        if [ ! -f certs/certs.zip ]; then
+          echo "Creating certs";
+          echo -ne \
+          "instances:\n"\
+          "  - name: elasticsearch\n"\
+          "    dns:\n"\
+          "      - elasticsearch\n"\
+          "      - localhost\n"\
+          "    ip:\n"\
+          "      - 127.0.0.1\n"\
+          "  - name: kibana\n"\
+          "    dns:\n"\
+          "      - kibana\n"\
+          "      - localhost\n"\
+          "    ip:\n"\
+          "      - 127.0.0.1\n"\
+          > config/certs/instances.yml;
+          bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
+          unzip config/certs/certs.zip -d config/certs;
+        fi;
+        echo "Setting file permissions"
+        chown -R root:root config/certs;
+        find . -type d -exec chmod 750 \{\} \;;
+        find . -type f -exec chmod 640 \{\} \;;
+        echo "Waiting for Elasticsearch availability";
+        until curl -s --cacert config/certs/ca/ca.crt https://elasticsearch:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
+        echo "Setting kibana_system password";
+        until curl -s -X POST --cacert config/certs/ca/ca.crt -u elastic:${ELASTIC_PASSWORD} -H "Content-Type: application/json" https://elasticsearch:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+        echo "All done!";
+      '
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f config/certs/elasticsearch/elasticsearch.crt ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+
   elasticsearch:
-    container_name: "esd_elasticsearch-8.3.3"
-    image: "docker.elastic.co/elasticsearch/elasticsearch:8.3.3"
+    depends_on:
+      setup:
+        condition: service_healthy
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.3.3
     ulimits:
       memlock:
         soft: -1
         hard: -1
     env_file: [".env"]
     environment:
-      - "cluster.name=esd"
-      - "bootstrap.memory_lock=true"
-      - "discovery.type=single-node"
-      - "xpack.security.enabled=true"
-      - "xpack.security.http.ssl.enabled=true"
-      - "xpack.security.http.ssl.certificate=$ELASTICSEARCH_CERTS_DIR/localhost/localhost.crt"
-      - "xpack.security.http.ssl.key=$ELASTICSEARCH_CERTS_DIR/localhost/localhost.key"
-      - "xpack.security.transport.ssl.enabled=true"
-      - "xpack.security.transport.ssl.certificate=$ELASTICSEARCH_CERTS_DIR/localhost/localhost.crt"
-      - "xpack.security.transport.ssl.key=$ELASTICSEARCH_CERTS_DIR/localhost/localhost.key"
-      - "xpack.security.transport.ssl.verification_mode=certificate"
-      - "xpack.license.self_generated.type=trial"
-      - "ELASTIC_PASSWORD=$ELASTIC_PASSWORD"
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - cluster.name=esd
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.certificate=$ELASTICSEARCH_CERTS_DIR/elasticsearch/elasticsearch.crt
+      - xpack.security.http.ssl.key=$ELASTICSEARCH_CERTS_DIR/elasticsearch/elasticsearch.key
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.certificate=$ELASTICSEARCH_CERTS_DIR/elasticsearch/elasticsearch.crt
+      - xpack.security.transport.ssl.key=$ELASTICSEARCH_CERTS_DIR/elasticsearch/elasticsearch.key
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.license.self_generated.type=trial
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
     volumes:
-      - "./cert-bundle:$ELASTICSEARCH_CERTS_DIR"
-      - "./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
-      - "esdata-8.3:/usr/share/elasticsearch/data"
+      - ./config/certs:$ELASTICSEARCH_CERTS_DIR
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - esdata-8.3:/usr/share/elasticsearch/data
     ports: ["19200:9200"]
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
 
   kibana:
-    container_name: "esd_kibana-8.3.3"
-    image: "docker.elastic.co/kibana/kibana:8.3.3"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    image: docker.elastic.co/kibana/kibana:8.3.3
     env_file: [".env"]
     environment:
-      - "ELASTICSEARCH_HOSTS=https://elasticsearch:9200"
-      - "ELASTICSEARCH_USERNAME=$KIBANA_ES_USERNAME"
-      - "ELASTICSEARCH_PASSWORD=$KIBANA_ES_PASSWORD"
-      - "ELASTICSEARCH_SSL_KEY=$KIBANA_CERTS_DIR/localhost/localhost.key"
-      - "ELASTICSEARCH_SSL_CERTIFICATE=$KIBANA_CERTS_DIR/localhost/localhost.crt"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$KIBANA_CERTS_DIR/ca/ca.crt"
-      - "ELASTICSEARCH_SSL_VERIFICATIONMODE=certificate"
-      - "XPACK_REPORTING_CAPTURE_BROWSER_TYPE=chromium"
-      - "XPACK_REPORTING_KIBANASERVER_PORT=8080"
-      - "XPACK_REPORTING_KIBANASERVER_PROTOCOL=https"
-      - "XPACK_REPORTING_KIBANASERVER_HOSTNAME=web"
-      - "XPACK_REPORTING_ENCRYPTIONKEY=$XPACK_REPORTING_ENCRYPTIONKEY"
-      - "XPACK_SECURITY_ENCRYPTIONKEY=$XPACK_SECURITY_ENCRYPTIONKEY"
-      - "XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=$XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY"
-      - "XPACK_REPORTING_CAPTURE_BROWSER_CHROMIUM_DISABLESANDBOX=true"
+      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=$KIBANA_ES_USERNAME
+      - ELASTICSEARCH_PASSWORD=$KIBANA_ES_PASSWORD
+      - ELASTICSEARCH_SSL_KEY=$KIBANA_CERTS_DIR/kibana/kibana.key
+      - ELASTICSEARCH_SSL_CERTIFICATE=$KIBANA_CERTS_DIR/kibana/kibana.crt
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=$KIBANA_CERTS_DIR/ca/ca.crt
+      - ELASTICSEARCH_SSL_VERIFICATIONMODE=certificate
+      - XPACK_REPORTING_CAPTURE_BROWSER_TYPE=chromium
+      - XPACK_REPORTING_KIBANASERVER_PORT=8080
+      - XPACK_REPORTING_KIBANASERVER_PROTOCOL=https
+      - XPACK_REPORTING_KIBANASERVER_HOSTNAME=web
+      - XPACK_REPORTING_ENCRYPTIONKEY=$XPACK_REPORTING_ENCRYPTIONKEY
+      - XPACK_SECURITY_ENCRYPTIONKEY=$XPACK_SECURITY_ENCRYPTIONKEY
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=$XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY
+
     volumes:
-      - "./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml"
-      - "./cert-bundle:$KIBANA_CERTS_DIR"
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+      - ./config/certs:$KIBANA_CERTS_DIR
     ports: ["15601:5601"]
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
 
 volumes:
   esdata-8.3:
-    driver: "local"
+    driver: local
