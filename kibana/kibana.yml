@@ -9,6 +9,8 @@ xpack.reporting:
     renderComplete: 1m
     waitForElements: 1m
 
+xpack.screenshotting.browser.chromium.disableSandbox: true
+
 logging:
  loggers:
    - name: plugins.reporting
