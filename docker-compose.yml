@@ -34,6 +34,7 @@ services:
           "    dns:\n"\
           "      - es01\n"\
           "      - localhost\n"\
+          "      - host.docker.internal\n"\
           "    ip:\n"\
           "      - 127.0.0.1\n"\
           "  - name: es02\n"\
