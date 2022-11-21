@@ -12,10 +12,12 @@ xpack.reporting:
 xpack.reporting.capture.browser.chromium.disableSandbox: true
 
 logging:
- loggers:
-   - name: plugins.reporting
-     appenders: [console]
-     level: debug
-   - name: plugins.screenshotting
-     appenders: [console]
-     level: debug
+  loggers:
+    - name: plugins.reporting
+      appenders: [console]
+      level: debug
+    - name: plugins.screenshotting
+      appenders: [console]
+      level: debug
+
+server.publicBaseUrl: https://lala.co
