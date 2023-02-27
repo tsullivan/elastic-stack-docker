@@ -8,6 +8,7 @@ xpack.reporting:
   capture.timeouts:
     renderComplete: 1m
     waitForElements: 1m
+  queue.timeout: 10m
 
 xpack.reporting.capture.browser.chromium.disableSandbox: true
 
