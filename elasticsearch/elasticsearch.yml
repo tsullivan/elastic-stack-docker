@@ -1,0 +1,12 @@
+cluster.name: "docker-cluster"
+network.host: 0.0.0.0
+
+xpack.notification.email.account:
+  gmail_account:
+    profile: gmail
+    smtp:
+      auth: true
+      starttls.enable: true
+      host: smtp.gmail.com
+      port: 587
+      user: tsullivan
