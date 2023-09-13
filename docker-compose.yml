@@ -176,7 +176,6 @@ services:
     volumes:
       - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
       - ./config/certs:/usr/share/kibana/config/certs
-      - kibanadata:/usr/share/kibana/data
     ports:
       - ${KIBANA_PORT}:5601
     environment:
@@ -206,6 +205,4 @@ volumes:
   esdata01:
     driver: local
   esdata02:
-    driver: local
-  kibanadata:
     driver: local
