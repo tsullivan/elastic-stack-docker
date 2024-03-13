@@ -1,5 +1,13 @@
-server:
-  host: 0.0.0.0
+server.host: 0.0.0.0
+server.name: kibana
+server.ssl.certificate: config/certs/kibana/kibana.crt
+server.ssl.enabled: true
+server.ssl.key: config/certs/kibana/kibana.key
+
+server.publicBaseUrl: https://ladeda.co
+
+elasticsearch.hosts: https://es01:9200
+elasticsearch.ssl.certificateAuthorities: config/certs/ca/ca.crt
 
 xpack.reporting:
   roles.enabled: false
@@ -21,4 +29,3 @@ logging:
       appenders: [console]
       level: debug
 
-server.publicBaseUrl: https://lala.co
