@@ -4,7 +4,7 @@ server.ssl.certificate: config/certs/kibana/kibana.crt
 server.ssl.enabled: true
 server.ssl.key: config/certs/kibana/kibana.key
 
-server.publicBaseUrl: https://ladeda.co
+server.publicBaseUrl: https://elastic.co
 
 elasticsearch.hosts: https://es01:9200
 elasticsearch.ssl.certificateAuthorities: config/certs/ca/ca.crt
@@ -29,3 +29,13 @@ logging:
       appenders: [console]
       level: debug
 
+
+logging.appenders.default:
+   type: console
+   layout:
+     type: json
+logging:
+  loggers:
+     - name: metrics.ops
+       level: debug
+ops.interval: 100
