@@ -1,0 +1,19 @@
+filebeat.inputs:
+- type: stdin
+  enabled: true
+
+logging:
+  level: debug
+
+processors:
+- decode_json_fields:
+    fields: ["message"]
+    target: ""
+    overwrite_keys: true
+
+output.elasticsearch:
+  username: "${ES_USERNAME}"
+  password: "${ES_PASSWORD}"
+  hosts: ["${ES_HOST:localhost:19200}"]
+  protocol: "https"
+  ssl.certificate_authorities: ["${ES_CA_CERT_ROOT}/ca/ca.crt"]

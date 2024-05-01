@@ -20,22 +20,18 @@ xpack.reporting:
 
 xpack.reporting.capture.browser.chromium.disableSandbox: true
 
-logging:
-  loggers:
-    - name: plugins.reporting
-      appenders: [console]
-      level: debug
-    - name: plugins.screenshotting
-      appenders: [console]
-      level: debug
-
-
 logging.appenders.default:
-   type: console
-   layout:
-     type: json
+  type: console
+  layout:
+    type: json
 logging:
   loggers:
-     - name: metrics.ops
-       level: debug
+  - name: plugins.reporting
+    appenders: [console]
+    level: debug
+  - name: plugins.screenshotting
+    appenders: [console]
+    level: debug
+  - name: metrics.ops
+    level: debug
 ops.interval: 100
