@@ -15,12 +15,13 @@ xpack.reporting:
   roles.enabled: false
   csv.maxSizeBytes: 1gb
   capture.maxAttempts: 1
-  capture.timeouts:
-    renderComplete: 1m
-    waitForElements: 1m
   queue.timeout: 10m
-
-xpack.reporting.capture.browser.chromium.disableSandbox: true
+xpack.screenshotting:
+  capture:
+    timeouts:
+      renderComplete: 1m
+      waitForElements: 1m
+  browser.chromium.disableSandbox: true
 
 logging:
   loggers:
