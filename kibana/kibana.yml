@@ -11,24 +11,24 @@ server.publicBaseUrl: https://ladeda.co
 elasticsearch.hosts: https://es01:9200
 elasticsearch.ssl.certificateAuthorities: config/certs/ca/ca.crt
 
-xpack.reporting:
-  roles.enabled: false
-  csv.maxSizeBytes: 1gb
-  capture.maxAttempts: 1
-  queue.timeout: 10m
-xpack.screenshotting:
-  capture:
-    timeouts:
-      renderComplete: 1m
-      waitForElements: 1m
-  browser.chromium.disableSandbox: true
-
-logging:
-  loggers:
-    - name: plugins.reporting
-      appenders: [console]
-      level: debug
-    - name: plugins.screenshotting
-      appenders: [console]
-      level: debug
-
+# xpack.reporting:
+#   roles.enabled: false
+#   csv.maxSizeBytes: 1gb
+#   capture.maxAttempts: 1
+#   queue.timeout: 10m
+# xpack.screenshotting:
+#   capture:
+#     timeouts:
+#       renderComplete: 1m
+#       waitForElements: 1m
+#   browser.chromium.disableSandbox: true
+# 
+# logging:
+#   loggers:
+#     - name: plugins.reporting
+#       appenders: [console]
+#       level: debug
+#     - name: plugins.screenshotting
+#       appenders: [console]
+#       level: debug
+# 
